@@ -1,6 +1,6 @@
 { lib, ... }:
 {
-  nix.settings = lib.mkDefault {
+  nix.settings = {
     allow-import-from-derivation = false;
     use-xdg-base-directories = true;
     connect-timeout = 5;
