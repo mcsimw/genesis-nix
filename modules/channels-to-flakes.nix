@@ -24,6 +24,7 @@
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
       );
+      package = pkgs.nix;
       settings."flake-registry" = "/etc/nix/registry.json";
       nixPath = [ "nixpkgs=flake:nixpkgs" ];
 #      channel.enable = false;
