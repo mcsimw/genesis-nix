@@ -32,6 +32,8 @@
       builders-use-substitutes = true;
       use-xdg-base-directories = true;
       use-cgroups = true;
+      log-lines = 30;
+      keep-going = true;
       connect-timeout = 5;
       extra-experimental-features = [
         "nix-command"
@@ -41,6 +43,9 @@
         "fetch-closure"
         "dynamic-derivations"
       ];
+      warn-dirty = false;
+      keep-derivations = true;
+      keep-outputs = true;
     };
   };
 }
