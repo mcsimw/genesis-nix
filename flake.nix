@@ -10,7 +10,6 @@
       nixosModules =
         let
           defaultModules = {
-            channels-to-flakes = ./modules/channels-to-flakes.nix;
             nix-config = ./modules/nix-conf.nix;
           };
         in
