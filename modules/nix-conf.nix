@@ -38,7 +38,6 @@
         "flakes"
         "cgroups"
         "auto-allocate-uids"
-        "pipe-operator"
         "fetch-closure"
         "dynamic-derivations"
       ];
