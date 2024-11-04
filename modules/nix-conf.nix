@@ -38,7 +38,9 @@
         "flakes"
         "cgroups"
         "auto-allocate-uids"
-	"repl-flake"
+        "pipe-operator"
+        "fetch-closure"
+        "dynamic-derivations"
       ];
     };
   };
