@@ -35,6 +35,7 @@
       log-lines = 30;
       keep-going = true;
       connect-timeout = 5;
+      sandbox = pkgs.stdenv.hostPlatform.isLinux;
       extra-experimental-features = [
         "nix-command"
         "flakes"
@@ -42,10 +43,12 @@
         "auto-allocate-uids"
         "fetch-closure"
         "dynamic-derivations"
+	"pipe-operators"
       ];
       warn-dirty = false;
       keep-derivations = true;
       keep-outputs = true;
+      accept-flake-config = false;
     };
   };
 }
