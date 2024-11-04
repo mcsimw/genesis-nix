@@ -46,7 +46,6 @@
         "dynamic-derivations"
 	"pipe-operators"
       ];
-      extraOptions = "experimental-features = nix-command flakes cgroups auto-allocate-uids fetch-closure dynamic-derivations pipe-operators";
       warn-dirty = false;
       keep-derivations = true;
       keep-outputs = true;
