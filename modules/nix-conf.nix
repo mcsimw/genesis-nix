@@ -38,6 +38,7 @@
         "flakes"
         "cgroups"
         "auto-allocate-uids"
+	"repl-flake"
       ];
     };
   };
