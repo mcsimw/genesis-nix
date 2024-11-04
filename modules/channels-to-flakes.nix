@@ -28,9 +28,9 @@
       nixPath = [ "nixpkgs=flake:nixpkgs" ];
       channel.enable = false;
     };
-    environment = {
+#    environment = {
       # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/programs/environment.nix#L20
-      variables.NIXPKGS_CONFIG = lib.mkForce "";
-    };
+#      variables.NIXPKGS_CONFIG = lib.mkForce "";
+#    };
   };
 }
