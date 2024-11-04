@@ -19,9 +19,9 @@
   config.nix = {
     registry = lib.listToAttrs (map (name: lib.nameValuePair name {flake = inputs.${name};}) config.nix.inputsToPin);
     nixPath = ["nixpkgs=flake:nixpkgs"];
+    channel.enable = false;
     settings = {
       "flake-registry" = "/etc/nix/registry.json";
-      channel.enable = false;
       allow-import-from-derivation = false;
       use-cgroups = true;
       connect-timeout = 5;
