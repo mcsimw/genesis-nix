@@ -26,7 +26,7 @@
       );
       settings."flake-registry" = "/etc/nix/registry.json";
       nixPath = [ "nixpkgs=flake:nixpkgs" ];
-      channel.enable = false;
+#      channel.enable = false;
     };
 #    environment = {
       # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/programs/environment.nix#L20
