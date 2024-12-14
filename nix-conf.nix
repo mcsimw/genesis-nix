@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   warn-dirty = false;
   keep-derivations = true;
