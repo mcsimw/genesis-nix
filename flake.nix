@@ -10,7 +10,7 @@
       nixosModules =
         let
           defaultModules = {
-            nix-config = ./modules/nix-conf.nix;
+            nix-config = ./modules/nixos/nix-conf.nix;
           };
         in
         defaultModules
