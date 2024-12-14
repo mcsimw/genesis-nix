@@ -30,7 +30,7 @@
       channel.enable = false;
       settings = {
         "flake-registry" = "/etc/nix/registry.json";
-      } // (import ../../nix-conf.nix { inherit nixpkgs });
+      } // (import ../../nix-conf.nix { inherit pkgs; });
     };
   };
 }
