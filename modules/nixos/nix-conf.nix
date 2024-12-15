@@ -21,7 +21,7 @@
   };
 
   config = {
-	nixpkgs.overlays = lib.optional (inputs ? "nix") inputs.nix.overlays.default;
+    nixpkgs.overlays = lib.optional (inputs ? "nix") inputs.nix.overlays.default;
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     nix = {
       registry = lib.listToAttrs (

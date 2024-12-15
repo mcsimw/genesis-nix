@@ -27,7 +27,7 @@
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
       );
       settings = {
-  	    "flake-registry" = "${config.xdg.configHome}/nix/registry.json";
+        "flake-registry" = "${config.xdg.configHome}/nix/registry.json";
       } // (import ../../nix-settings.nix { inherit pkgs; });
     };
   };
