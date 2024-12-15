@@ -21,7 +21,6 @@
   };
 
   config = {
-    environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     nix = {
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
