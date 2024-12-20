@@ -19,8 +19,15 @@
       '';
     };
   };
-
   config = {
+    programs.command-not-found.enable = false;
+    documentation = {
+      enable = lib.mkDefault true;
+      man.enable = lib.mkDefault true;
+      doc.enable = lib.mkForce false;
+      nixos.enable = lib.mkForce false;
+      info.enable = lib.mkForce false;
+    };
     nixpkgs.overlays = lib.optional (inputs ? "nix") inputs.nix.overlays.default;
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     nix = {

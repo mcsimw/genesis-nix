@@ -21,6 +21,11 @@
   };
 
   config = {
+    manual = {
+      html.enable = false;
+      json.enable = false;
+      manpages.enable = false;
+    };
     nix = {
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
