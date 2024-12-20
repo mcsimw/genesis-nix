@@ -17,22 +17,14 @@
         "x86_64-linux"
         "aarch64-darwin"
       ];
-      perSystem =
-        { pkgs, system, ... }:
-        {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-          };
-          treefmt = {
-            projectRootFile = "flake.nix";
-            programs = {
-              nixfmt.enable = true;
-              deadnix.enable = true;
-              statix.enable = true;
-            };
-          };
+      perSystem.treefmt = {
+        projectRootFile = "flake.nix";
+        programs = {
+          nixfmt.enable = true;
+          deadnix.enable = true;
+          statix.enable = true;
         };
+      };
       flake = {
         nixosModules =
           let
