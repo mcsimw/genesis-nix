@@ -18,6 +18,7 @@
             nix-conf = ./modules/nixos/nix-conf.nix;
             nixos-conf = ./modules/nixos/nixos-conf.nix;
             root-clean = ./modules/nixos/root-clean.nix;
+            impermanence = ./modules/nixos/impermanence.nix;
           };
         in
         defaultModules

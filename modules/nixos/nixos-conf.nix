@@ -1,5 +1,11 @@
 { config, lib, ... }:
 {
+  hardware = {
+    graphics.enable32Bit = lib.mkDefault true;
+    enableAllFirmware = true;
+    pulseaudio.enable = lib.mkForce false;
+  };
+  users.mutableUsers = false;
   security = {
     polkit.enable = lib.mkDefault true;
     rtkit.enable = config.services.pipewire.enable;
