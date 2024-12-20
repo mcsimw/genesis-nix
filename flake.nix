@@ -15,7 +15,8 @@
       nixosModules =
         let
           defaultModules = {
-            nix-config = ./modules/nixos/nix-conf.nix;
+            nix-conf = ./modules/nixos/nix-conf.nix;
+            nixos-conf = ./modules/nixos/nixos-conf.nix;
             root-clean = ./modules/nixos/root-clean.nix;
           };
         in
