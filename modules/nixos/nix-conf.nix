@@ -22,9 +22,7 @@
   config = {
     nixpkgs = {
       overlays = lib.optional (inputs ? "nix") inputs.nix.overlays.default;
-      config = lib.optionalAttrs (!builtins.hasAttr "pkgs" config.nixpkgs) {
-        allowUnfree = true;
-      };
+      allowUnfree = lib.mkIf (!builtins.hasAttr "pkgs" (config.nixpkgs or { })) (lib.mkDefault true);
 
     };
     nix = {
