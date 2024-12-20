@@ -21,7 +21,6 @@
   };
   config = {
     nixpkgs.overlays = lib.optional (inputs ? "nix") inputs.nix.overlays.default;
-    environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     nix = {
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
