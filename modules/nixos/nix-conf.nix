@@ -20,9 +20,7 @@
     };
   };
   config = {
-    nixpkgs = {
-      overlays = lib.optional (inputs ? "nix") inputs.nix.overlays.default;
-    };
+    nixpkgs.overlays = lib.optional (inputs ? "nix") inputs.nix.overlays.default;
     nix = {
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
