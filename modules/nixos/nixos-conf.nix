@@ -2,25 +2,25 @@
 {
   hardware = {
     graphics.enable32Bit = lib.mkDefault true;
-    enableAllFirmware = true;
+    enableAllFirmware = lib.mkDefault true;
     pulseaudio.enable = lib.mkForce false;
   };
-  users.mutableUsers = false;
+  users.mutableUsers = lib.mkDefault false;
   security = {
     polkit.enable = lib.mkDefault true;
     rtkit.enable = config.services.pipewire.enable;
   };
   services = {
     fstrim.enable = lib.mkDefault true;
-    earlyoom.enable = true;
-    udisks2.enable = true;
-    dbus.implementation = "broker";
+    earlyoom.enable = lib.mkDefault true;
+    udisks2.enable = lib.mkDefault true;
+    dbus.implementation = lib.mkDefault "broker";
     zfs = lib.mkIf config.boot.zfs.enabled {
-      autoScrub = {
+      autoScrub = lib.mkDefault {
         enable = true;
         interval = "daily";
       };
-      trim = {
+      trim = lib.mkDefault {
         enable = true;
         interval = "daily";
       };
@@ -31,9 +31,9 @@
     defaultPackages = [ ];
   };
   programs = {
-    command-not-found.enable = false;
+    command-not-found.enable = lib.mkDefault false;
     vim = {
-      enable = true;
+      enable = lib.mkDefault true;
       defaultEditor = true;
     };
     fuse.userAllowOther = true;
@@ -51,7 +51,7 @@
     info.enable = lib.mkForce false;
   };
   boot = {
-    initrd.systemd.enable = true;
+    initrd.systemd.enable = lib.mkDefault true;
     zfs.forceImportRoot = lib.mkForce false;
   };
 }
