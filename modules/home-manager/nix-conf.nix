@@ -32,7 +32,7 @@
       );
       settings = {
         "flake-registry" = "${config.xdg.configHome}/nix/registry.json";
-      } // (import ../../nix-settings.nix { inherit pkgs; });
+      } // (import ../nix-settings.nix { inherit pkgs; });
     };
   };
 }
