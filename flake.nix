@@ -19,6 +19,7 @@
             nixos-conf = ./modules/nixos/nixos-conf.nix;
             root-clean = ./modules/nixos/root-clean.nix;
             impermanence = ./modules/nixos/impermanence.nix;
+            home-manager = ./modules/nixos/home-manager.nix;
           };
         in
         defaultModules
