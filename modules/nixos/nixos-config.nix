@@ -1,4 +1,5 @@
 {
+  environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
   programs.command-not-found.enable = false;
   documentation = {
     enable = lib.mkDefault true;
