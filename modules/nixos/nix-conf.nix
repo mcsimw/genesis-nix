@@ -20,6 +20,7 @@
     };
   };
   config = {
+    system.tools.nixos-option.enable = false;
     nixpkgs.overlays = lib.optional (inputs ? "nix") inputs.nix.overlays.default;
     nix = {
       registry = lib.listToAttrs (
