@@ -4,7 +4,6 @@
   options,
   ...
 }:
-
 {
   config = lib.optionalAttrs (options ? home-manager) {
     home-manager = {
