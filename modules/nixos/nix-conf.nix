@@ -20,7 +20,11 @@
     };
   };
   config = {
-    system.tools.nixos-option.enable = false;
+    environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
+    system = {
+      tools.nixos-option.enable = false;
+      rebuild.enableNg = true;
+    };
     nixpkgs.overlays = lib.optional (inputs ? "nix") inputs.nix.overlays.default;
     nix = {
       registry = lib.listToAttrs (

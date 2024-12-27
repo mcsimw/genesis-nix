@@ -26,10 +26,7 @@
       };
     };
   };
-  environment = {
-    variables.NIXPKGS_CONFIG = lib.mkForce "";
-    defaultPackages = [ ];
-  };
+  environment.defaultPackages = [ ];
   programs = {
     command-not-found.enable = lib.mkDefault false;
     vim = {

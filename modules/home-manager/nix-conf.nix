@@ -19,7 +19,6 @@
       '';
     };
   };
-
   config = {
     nix = {
       registry = lib.listToAttrs (
