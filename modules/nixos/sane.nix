@@ -1,16 +1,13 @@
 { config, lib, ... }:
 {
-  hardware = {
-    graphics.enable32Bit = lib.mkDefault true;
-    enableAllFirmware = lib.mkDefault true;
-    pulseaudio.enable = lib.mkForce false;
-  };
+  hardware.graphics.enable32Bit = lib.mkDefault true;
   users.mutableUsers = lib.mkDefault false;
   security = {
     polkit.enable = lib.mkDefault true;
     rtkit.enable = config.services.pipewire.enable;
   };
   services = {
+    pulseaudio.enable = lib.mkForce false;
     fstrim.enable = lib.mkDefault true;
     earlyoom.enable = lib.mkDefault true;
     udisks2.enable = lib.mkDefault true;
