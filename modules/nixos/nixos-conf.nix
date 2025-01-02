@@ -1,5 +1,9 @@
 { config, lib, ... }:
 {
+  networking = lib.mkDefault {
+    useDHCP = true;
+    useNetworkd = true;
+  };
   hardware = {
     graphics.enable32Bit = lib.mkDefault true;
     enableAllFirmware = lib.mkDefault true;
