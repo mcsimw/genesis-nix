@@ -4,12 +4,12 @@
     nixpkgs.url = "github:nixos/nixpkgs";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
-	  inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-parts = {
-	  url = "github:hercules-ci/flake-parts";
-	  inputs.nixpkgs-lib.follows = "nixpkgs";
-	};
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs:
