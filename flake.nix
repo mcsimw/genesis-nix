@@ -1,29 +1,35 @@
 {
   description = "nix sane defaults";
   inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+	  inputs.nixpkgs.follows = "nixpkgs";
     };
-    systems.url = "github:nix-systems/default";
+    flake-parts = {
+	  url = "github:hercules-ci/flake-parts";
+	  inputs.nixpkgs-lib.follows = "nixpkgs";
+	};
   };
   outputs =
-    {
-      self,
-      treefmt-nix,
-      nixpkgs,
-      systems,
-    }:
-    let
-      eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
-      treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./treefmt.nix);
-    in
-    {
-      formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
-      checks = eachSystem (pkgs: {
-        formatting = treefmtEval.${pkgs.system}.config.build.check self;
-      });
-      nixosModules =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [
+        inputs.treefmt-nix.flakeModule
+      ];
+      systems = [
+        "x86_64-linux"
+      ];
+      perSystem.treefmt = {
+        projectRootFile = "flake.nix";
+        programs = {
+          nixfmt.enable = true;
+          deadnix.enable = true;
+          statix.enable = true;
+          dos2unix.enable = true;
+        };
+      };
+      flake.nixosModules =
         let
           defaultModules = {
             nix-conf = ./modules/nixos/nix-conf.nix;
