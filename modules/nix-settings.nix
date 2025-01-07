@@ -19,6 +19,6 @@
     "auto-allocate-uids"
     "fetch-closure"
     "dynamic-derivations"
-    #    "pipe-operators"
+    "pipe-operators"
   ];
 }
