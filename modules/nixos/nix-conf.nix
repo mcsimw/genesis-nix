@@ -6,6 +6,7 @@
   ...
 }:
 {
+  imports = lib.optional (inputs ? "lix-module") inputs.lix-module.nixosModules.default;
   options = with lib; {
     nix.inputsToPin = mkOption {
       type = with types; listOf str;
@@ -20,7 +21,6 @@
     };
   };
   config = {
-    imports = lib.optional (inputs ? "lix-module") inputs.lix-module.nixosModules.default;
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     system = {
       tools.nixos-option.enable = false;
