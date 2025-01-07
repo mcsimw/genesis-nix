@@ -1,5 +1,9 @@
 { config, lib, ... }:
 {
+  networking = lib.mkDefault {
+    useDHCP = true;
+    useNetworkd = true;
+  };
   hardware.graphics.enable32Bit = lib.mkDefault true;
   users.mutableUsers = lib.mkDefault false;
   security = {
@@ -7,8 +11,8 @@
     rtkit.enable = config.services.pipewire.enable;
   };
   services = {
-    pulseaudio.enable = lib.mkForce false;
     fstrim.enable = lib.mkDefault true;
+    pulseaudio.enable = lib.mkForce false;
     earlyoom.enable = lib.mkDefault true;
     udisks2.enable = lib.mkDefault true;
     dbus.implementation = lib.mkDefault "broker";
@@ -23,7 +27,10 @@
       };
     };
   };
-  environment.defaultPackages = [ ];
+  environment = {
+    variables.NIXPKGS_CONFIG = lib.mkForce "";
+    defaultPackages = [ ];
+  };
   programs = {
     command-not-found.enable = lib.mkDefault false;
     vim = {
