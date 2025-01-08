@@ -32,6 +32,7 @@
     defaultPackages = [ ];
   };
   programs = {
+    direnv.enable = true;
     command-not-found.enable = lib.mkDefault false;
     vim = {
       enable = lib.mkDefault true;
