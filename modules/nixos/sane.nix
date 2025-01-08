@@ -10,13 +10,13 @@
     polkit.enable = lib.mkDefault true;
     rtkit.enable = config.services.pipewire.enable;
     sudo.enable = lib.mkDefault false;
-    doas = lib.mkDefault {
-      enable = true;
+    doas = {
+      enable = lib.mkDefault true;
       extraRules = [
         {
           groups = [ "wheel" ];
           keepEnv = true;
-          persist = true;
+          nopass = true;
         }
       ];
     };
