@@ -21,14 +21,14 @@
       ];
     };
   };
-  services = {
-    fstrim.enable = lib.mkDefault true;
+  services = lib.mkDefault {
+    fstrim.enable = true;
     pulseaudio.enable = lib.mkForce false;
-    earlyoom.enable = lib.mkDefault true;
-    udisks2.enable = lib.mkDefault true;
-    dbus.implementation = lib.mkDefault "broker";
+    earlyoom.enable = true;
+    udisks2.enable = true;
+    dbus.implementation = "broker";
     zfs = lib.mkIf config.boot.zfs.enabled {
-      autoScrub = lib.mkDefault {
+      autoScrub = {
         enable = true;
         interval = "daily";
       };
@@ -42,11 +42,11 @@
     variables.NIXPKGS_CONFIG = lib.mkForce "";
     defaultPackages = [ ];
   };
-  programs = {
+  programs = lib.mkDefault {
     direnv.enable = true;
-    command-not-found.enable = lib.mkDefault false;
+    command-not-found.enable = false;
     vim = {
-      enable = lib.mkDefault true;
+      enable = true;
       defaultEditor = true;
     };
     fuse.userAllowOther = true;
@@ -56,15 +56,15 @@
       lfs.enable = true;
     };
   };
-  documentation = {
-    enable = lib.mkDefault true;
-    man.enable = lib.mkDefault true;
+  documentation = lib.mkDefault {
+    enable = true;
+    man.enable = true;
     doc.enable = lib.mkForce false;
     nixos.enable = lib.mkForce false;
     info.enable = lib.mkForce false;
   };
-  boot = {
-    initrd.systemd.enable = lib.mkDefault true;
+  boot = lib.mkDefault {
+    initrd.systemd.enable = true;
     zfs.forceImportRoot = lib.mkForce false;
   };
 }
