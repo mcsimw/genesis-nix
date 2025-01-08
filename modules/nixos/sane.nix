@@ -9,6 +9,17 @@
   security = {
     polkit.enable = lib.mkDefault true;
     rtkit.enable = config.services.pipewire.enable;
+    sudo.enable = lib.mkDefault false;
+    doas = lib.mkDefault {
+      enable = true;
+      extraRules = [
+        {
+          groups = [ "wheel" ];
+          keepEnv = true;
+          persist = true;
+        }
+      ];
+    };
   };
   services = {
     fstrim.enable = lib.mkDefault true;
