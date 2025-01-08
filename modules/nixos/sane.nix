@@ -16,7 +16,7 @@
         {
           groups = [ "wheel" ];
           keepEnv = true;
-          nopass = true;
+          noPass = true;
         }
       ];
     };
