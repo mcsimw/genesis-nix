@@ -40,7 +40,7 @@
         modules = [
           sub.src
           flake.nixos-facter-modules.nixosModules.facter
-          flake.nixembryo.nixosModules.default
+          flake.self.nixosModules.default
           inputs.chaotic.nixosModules.default
           {
             nixpkgs.config.allowUnfree = true;
