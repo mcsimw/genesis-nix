@@ -14,17 +14,18 @@
               type = lib.types.nullOr lib.types.str;
               default = null;
               description = ''
-                Optional hostname. If null or not set, the submodule is ignored.
+                Optional hostname. If null or not set, this submodule is ignored.
+              '';
+            };
+            src = lib.mkOption {
+              type = lib.types.path;
+              description = ''
+                The path to the configuration file or directory for this host.
               '';
             };
           };
         }
       );
-      description = ''
-        A list of submodules, each with an optional hostname.
-        Only those submodules that specify a hostname actually generate
-        a NixOS configuration.
-      '';
     };
   };
   config.flake.nixosConfigurations = builtins.listToAttrs (
@@ -33,10 +34,11 @@
       value = inputs.nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./configuration.nix
+          sub.src
           inputs.nixos-facter-modules.nixosModules.facter
           inputs.nixembryo.nixosModules.default
           inputs.chaotic.nixosModules.default
+
           {
             facter.reportPath = ./facter.json;
             nixpkgs.config.allowUnfree = true;
