@@ -4,7 +4,6 @@
   pkgs,
   ...
 }:
-
 let
   cfg = config.zfs-rollback;
   cfgZfs = config.boot.zfs;
