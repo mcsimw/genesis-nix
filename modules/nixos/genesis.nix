@@ -41,6 +41,7 @@
           sub.src
           flake.nixos-facter-modules.nixosModules.facter
           flake.self.nixosModules.default
+          flake.self.nixosModules.fakeFileSystems
           inputs.chaotic.nixosModules.default
           {
             nixpkgs.config.allowUnfree = true;
