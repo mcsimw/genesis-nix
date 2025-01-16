@@ -9,11 +9,13 @@
   options.fakeFileSystems.nix = {
     enable = lib.mkEnableOption "Enables nix filesystem";
     template = lib.mkOption {
-      type = lib.types.enum [
-        "zfsos"
-        "bcachefsos"
-      ];
-      description = "nix template to use";
+      type = lib.types.nullOr (
+        lib.types.enum [
+          "zfsos"
+          "bcachefsos"
+        ]
+      );
+      default = null;
     };
     device = lib.mkOption {
       type = lib.types.str;
