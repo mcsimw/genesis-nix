@@ -40,7 +40,6 @@
           inputs.chaotic.nixosModules.default
 
           {
-            facter.reportPath = ./facter.json;
             nixpkgs.config.allowUnfree = true;
           }
         ];
