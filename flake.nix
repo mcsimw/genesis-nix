@@ -43,6 +43,7 @@
         defaultModules
         // {
           default.imports = builtins.attrValues defaultModules;
+          genesis = ./modules/genesis.nix;
         };
     };
 }
