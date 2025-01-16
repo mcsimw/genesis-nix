@@ -1,6 +1,7 @@
 {
   description = "nix sane defaults";
   inputs = {
+    nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
     nixpkgs.url = "github:nixos/nixpkgs";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";

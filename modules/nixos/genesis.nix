@@ -35,14 +35,13 @@
   config.flake.nixosConfigurations = builtins.listToAttrs (
     map (sub: {
       name = sub.hostname;
-      value = inputs.nixpkgs.lib.nixosSystem {
+      value = flake.nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
           sub.src
-          inputs.nixos-facter-modules.nixosModules.facter
-          inputs.nixembryo.nixosModules.default
+          flake.nixos-facter-modules.nixosModules.facter
+          flake.nixembryo.nixosModules.default
           inputs.chaotic.nixosModules.default
-
           {
             nixpkgs.config.allowUnfree = true;
           }
