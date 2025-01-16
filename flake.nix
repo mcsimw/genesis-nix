@@ -11,6 +11,10 @@
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs:
@@ -45,6 +49,8 @@
         // {
           default.imports = builtins.attrValues defaultModules;
           genesis = { lib, ... }: lib.modules.importApply ./modules/nixos/genesis.nix { flake = inputs; };
+          fakeFileSystems =
+            { lib, ... }: lib.modules.importApply ./modules/nixos/fakeFileSystems { flake = inputs; };
         };
     };
 }
