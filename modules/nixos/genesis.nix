@@ -44,6 +44,7 @@
           inputs.chaotic.nixosModules.default
           {
             nixpkgs.config.allowUnfree = true;
+            networking.hostName = ${sub.hostname};
           }
         ];
       };
