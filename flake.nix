@@ -43,7 +43,7 @@
         defaultModules
         // {
           default.imports = builtins.attrValues defaultModules;
-          genesis = ./modules/genesis.nix;
+          genesis = { lib, ... }: lib.modules.importApply ./modules/nixos/genesis.nix { flake = inputs; };
         };
     };
 }
