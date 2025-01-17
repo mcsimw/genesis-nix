@@ -44,6 +44,7 @@
     map (sub: {
       name = sub.hostname;
       value = withSystem sub.system (
+        _:
         flake.nixpkgs.lib.nixosSystem {
           inherit (sub) system;
           specialArgs = withSystem sub.system (
