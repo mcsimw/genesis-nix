@@ -50,7 +50,13 @@
         _:
         flake.nixpkgs.lib.nixosSystem {
           inherit (sub) system;
-          specialArgs = { inherit inputs; };
+          specialArgs = withSystem system (
+            { inputs', self', ... }:
+            {
+              inherit (config) packages;
+              inherit self' inputs' inputs;
+            }
+          );
           modules = [
             sub.src
             flake.nixos-facter-modules.nixosModules.facter
