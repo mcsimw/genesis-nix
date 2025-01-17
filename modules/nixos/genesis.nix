@@ -21,7 +21,6 @@
                 Optional hostname. If null or not set, this submodule is ignored.
               '';
             };
-
             src = lib.mkOption {
               type = lib.types.path;
               description = ''
