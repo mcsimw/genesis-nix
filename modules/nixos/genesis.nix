@@ -9,7 +9,6 @@
   imports = [
     flake.treefmt-nix.flakeModule
   ];
-
   options.genesis = {
     compootuers = lib.mkOption {
       type = lib.types.listOf (
@@ -42,7 +41,6 @@
       );
     };
   };
-
   config.flake.nixosConfigurations = builtins.listToAttrs (
     map (sub: {
       name = sub.hostname;

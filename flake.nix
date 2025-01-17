@@ -56,14 +56,10 @@
           fakeFileSystems =
             {
               lib,
-              withSystem,
-              moduleWithSystem,
               ...
             }:
             lib.modules.importApply ./modules/nixos/fakeFileSystems {
               flake = inputs;
-              inherit moduleWithSystem;
-              inherit withSystem;
             };
         };
     };
