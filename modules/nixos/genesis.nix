@@ -27,7 +27,6 @@
                 The path to the configuration file or directory for this host.
               '';
             };
-
             system = lib.mkOption {
               type = lib.types.str;
               default = "x86_64-linux";
