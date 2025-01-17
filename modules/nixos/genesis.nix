@@ -1,4 +1,4 @@
-{ flake, withSystem, ... }:
+{ flake, ... }:
 {
   config,
   lib,
@@ -27,12 +27,6 @@
                 The path to the configuration file or directory for this host.
               '';
             };
-            system = lib.mkOption {
-              type = lib.types.str;
-              description = ''
-                The system architecture for this host (e.g., "x86_64-linux" or "aarch64-linux").
-              '';
-            };
           };
         }
       );
@@ -41,23 +35,20 @@
   config.flake.nixosConfigurations = builtins.listToAttrs (
     map (sub: {
       name = sub.hostname;
-      value = withSystem sub.system (
-        _:
-        flake.nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; };
-          modules = [
-            sub.src
-            flake.nixos-facter-modules.nixosModules.facter
-            flake.self.nixosModules.default
-            flake.self.nixosModules.fakeFileSystems
-            inputs.chaotic.nixosModules.default
-            {
-              nixpkgs.config.allowUnfree = true;
-              networking.hostName = "${sub.hostname}";
-            }
-          ];
-        }
-      );
+      value = flake.nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          sub.src
+          flake.nixos-facter-modules.nixosModules.facter
+          flake.self.nixosModules.default
+          flake.self.nixosModules.fakeFileSystems
+          inputs.chaotic.nixosModules.default
+          {
+            nixpkgs.config.allowUnfree = true;
+            networking.hostName = "${sub.hostname}";
+          }
+        ];
+      };
     }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
   );
 }

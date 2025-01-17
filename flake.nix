@@ -49,9 +49,15 @@
           default.imports = builtins.attrValues defaultModules;
           genesis = { lib, ... }: lib.modules.importApply ./modules/nixos/genesis.nix { flake = inputs; };
           fakeFileSystems =
-            { lib, withSystem, ... }:
+            {
+              lib,
+              withSystem,
+              moduleWithSystem,
+              ...
+            }:
             lib.modules.importApply ./modules/nixos/fakeFileSystems {
               flake = inputs;
+              inherit moduleWithSystem;
               inherit withSystem;
             };
         };
