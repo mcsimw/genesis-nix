@@ -63,10 +63,10 @@
               flake = inputs;
             };
           neogenesis =
-            { lib, ... }:
+            { lib, withSystem, ... }:
             lib.modules.importApply ./modules/nixos/neogenesis.nix {
               flake = inputs;
-              inherit inputs;
+              inherit withSystem;
             };
         };
     };
