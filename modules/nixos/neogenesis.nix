@@ -1,4 +1,10 @@
 { flake, withSystem, ... }:
+{
+  config,
+  inputs,
+  lib,
+  ...
+}:
 let
   computeSystems =
     compootuers:
@@ -32,7 +38,6 @@ in
       );
     };
   };
-  configForMap = config;
   config.flake.nixosConfigurations = builtins.listToAttrs (
     map (sub: {
       name = sub.hostname;
@@ -43,7 +48,7 @@ in
           specialArgs = withSystem sub.system (
             { inputs', self', ... }:
             {
-              inherit (configForMap) packages;
+              inherit (config) packages;
               inherit self' inputs' inputs;
             }
           );
