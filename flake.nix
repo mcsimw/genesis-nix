@@ -1,5 +1,5 @@
 {
-  description = "nix sane defaults";
+  description = "this is something:(";
   inputs = {
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
     nixpkgs.url = "github:nixos/nixpkgs";
