@@ -1,13 +1,13 @@
 { flake, withSystem, ... }:
 let
   computeSystems =
-    compootuers: builtins.unique (map (h: h.system) (filter (h: h.hostname != null) compootuers));
+    compootuers:
+    builtins.unique (map (h: h.system) (builtins.filter (h: h.hostname != null) compootuers));
 in
 {
   imports = [
     flake.treefmt-nix.flakeModule
   ];
-
   options.genesis = {
     compootuers = lib.mkOption {
       type = lib.types.listOf (
@@ -32,7 +32,6 @@ in
       );
     };
   };
-
   config.flake.nixosConfigurations = builtins.listToAttrs (
     map (sub: {
       name = sub.hostname;
@@ -58,6 +57,5 @@ in
       );
     }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
   );
-
   inherit computeSystems;
 }
