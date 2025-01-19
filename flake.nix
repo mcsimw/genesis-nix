@@ -57,6 +57,16 @@
               flake = inputs;
               inherit withSystem;
             };
+          neogenesis =
+            {
+              lib,
+              withSystem,
+              ...
+            }:
+            lib.modules.importApply ./modules/nixos/neogenesis.nix {
+              flake = inputs;
+              inherit withSystem;
+            };
           fakeFileSystems =
             { lib, ... }:
             lib.modules.importApply ./modules/nixos/fakeFileSystems {
