@@ -32,20 +32,18 @@ in
       );
     };
   };
+  configForMap = config;
   config.flake.nixosConfigurations = builtins.listToAttrs (
     map (sub: {
       name = sub.hostname;
       value = withSystem sub.system (
         _:
-        let
-          currentConfig = config; # Capture config locally
-        in
         flake.nixpkgs.lib.nixosSystem {
           inherit (sub) system;
           specialArgs = withSystem sub.system (
             { inputs', self', ... }:
             {
-              inherit (currentConfig) packages;
+              inherit (configForMap) packages;
               inherit self' inputs' inputs;
             }
           );
@@ -58,8 +56,7 @@ in
           ];
         }
       );
-    }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
+    }) (lib.filter (sub: sub.hostname != null) configForMap.genesis.compootuers)
   );
-
   inherit computeSystems;
 }
