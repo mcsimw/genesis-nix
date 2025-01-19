@@ -1,16 +1,23 @@
 { flake, withSystem, ... }:
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
 {
   _type = "merge";
   systems = {
     _type = "merge";
     merges = [
-      { _type = "inherit"; path = "systems"; }
+      {
+        _type = "inherit";
+        path = "systems";
+      }
       {
         _type = "literalExample";
-        value = lib.unique (
-          map (sub: sub.system)
-            (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
+        value = builtins.unique (
+          map (sub: sub.system) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
         );
       }
     ];
@@ -74,4 +81,3 @@
     }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
   );
 }
-
