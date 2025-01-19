@@ -1,10 +1,4 @@
 { flake, withSystem, ... }:
-{
-  config,
-  inputs,
-  lib,
-  ...
-}:
 let
   computeSystems =
     compootuers:
