@@ -1,8 +1,8 @@
-{ flake, ... }:
+{ localFlake, ... }:
 { lib, ... }:
 {
   imports = [
-    flake.disko.nixosModules.disko
+    localFlake.disko.nixosModules.disko
     ./zfsos.nix
     ./bcachefsos.nix
   ];

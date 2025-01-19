@@ -1,4 +1,4 @@
-{ flake, withSystem, ... }:
+{ localFlake, withSystem, ... }:
 {
   config,
   lib,
@@ -7,7 +7,7 @@
 }:
 {
   imports = [
-    flake.treefmt-nix.flakeModule
+    localFlake.treefmt-nix.flakeModule
   ];
   options.genesis = {
     compootuers = lib.mkOption {
@@ -54,15 +54,11 @@
             }
           );
           modules = [
+            { networking.hostName = sub.hostname; }
             sub.src
-            flake.nixos-facter-modules.nixosModules.facter
-            flake.self.nixosModules.default
-            flake.self.nixosModules.fakeFileSystems
-            inputs.chaotic.nixosModules.default
-            {
-              nixpkgs.config.allowUnfree = true;
-              networking.hostName = sub.hostname;
-            }
+            localFlake.self.nixosModules.default
+            localFlake.nixos-facter-modules.nixosModules.facter
+            localFlake.self.nixosModules.fakeFileSystems
           ];
         }
       );
