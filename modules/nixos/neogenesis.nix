@@ -61,7 +61,7 @@ in
           ];
         }
       );
-    }) (lib.filter (sub: sub.hostname != null) configForMap.genesis.compootuers)
+    }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
   );
   inherit computeSystems;
 }
