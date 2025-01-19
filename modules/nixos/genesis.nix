@@ -44,7 +44,7 @@
       name = sub.hostname;
       value = withSystem sub.system (
         _:
-        flake.nixpkgs.lib.nixosSystem {
+        localFlake.nixpkgs.lib.nixosSystem {
           inherit (sub) system;
           specialArgs = withSystem sub.system (
             { inputs', self', ... }:
