@@ -37,12 +37,15 @@ in
       name = sub.hostname;
       value = withSystem sub.system (
         _:
+        let
+          currentConfig = config; # Capture config locally
+        in
         flake.nixpkgs.lib.nixosSystem {
           inherit (sub) system;
           specialArgs = withSystem sub.system (
             { inputs', self', ... }:
             {
-              inherit (config) packages;
+              inherit (currentConfig) packages;
               inherit self' inputs' inputs;
             }
           );
@@ -57,5 +60,6 @@ in
       );
     }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
   );
+
   inherit computeSystems;
 }
