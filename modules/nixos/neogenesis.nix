@@ -1,55 +1,45 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-{
-  _type = "merge";
-  systems = {
-    _type = "merge";
-    merges = [
-      {
-        _type = "inherit";
-        path = "systems";
-      }
-      {
-        _type = "literalExample";
-        value = builtins.unique (
-          map (host: host.system) (lib.filter (host: host.hostname != null) config.genesis.compootuers)
-        );
-      }
-    ];
-  };
-  nixosModule = {
-    options.genesis.compootuers = lib.mkOption {
+{ flake, withSystem, ... }:
+let 
+  computeSystems = compootuers: builtins.unique (
+    map (h: h.system) 
+      (filter (h: h.hostname != null) compootuers)
+  );
+in {
+  imports = [
+    flake.treefmt-nix.flakeModule
+  ];
+
+  options.genesis = {
+    compootuers = lib.mkOption {
       type = lib.types.listOf (
         lib.types.submodule {
           options = {
             hostname = lib.mkOption {
               type = lib.types.nullOr lib.types.str;
               default = null;
-              description = "Hostname, or null if unused.";
+              description = "Optional hostname. If null or not set, this submodule is ignored.";
             };
             src = lib.mkOption {
               type = lib.types.path;
-              description = "NixOS config file/directory for this host.";
+              description = "The path to the configuration file or directory for this host.";
             };
             system = lib.mkOption {
               type = lib.types.str;
               default = "x86_64-linux";
-              description = "Architecture, e.g. 'x86_64-linux' or 'aarch64-linux'.";
+              description = "The Nix system architecture (e.g., \"x86_64-linux\", \"aarch64-linux\").";
             };
           };
         }
       );
-      default = [ ];
-      description = "List of computers built by neogenesis.";
     };
-    config.flake.nixosConfigurations = builtins.listToAttrs (
-      map (sub: {
-        name = sub.hostname;
-        value = pkgs.nixosSystem {
+  };
+
+  config.flake.nixosConfigurations = builtins.listToAttrs (
+    map (sub: {
+      name = sub.hostname;
+      value = withSystem sub.system (
+        _:
+        flake.nixpkgs.lib.nixosSystem {
           inherit (sub) system;
           specialArgs = withSystem sub.system (
             { inputs', self', ... }:
@@ -61,12 +51,15 @@
           modules = [
             { networking.hostName = sub.hostname; }
             sub.src
-            inputs.nixembryo.nixosModules.default
-            inputs.nixembryo.nixos-facter-modules.nixosModules.facter
-            inputs.nixembryo.nixosModules.fakeFileSystems
+            flake.self.nixosModules.default
+            flake.nixos-facter-modules.nixosModules.facter
+            flake.self.nixosModules.fakeFileSystems
           ];
-        };
-      }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
-    );
-  };
+        }
+      );
+    }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
+  );
+
+  computeSystems = computeSystems;
 }
+
