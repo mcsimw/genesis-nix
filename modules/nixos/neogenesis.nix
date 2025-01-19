@@ -1,10 +1,9 @@
 { flake, withSystem, ... }:
-let 
-  computeSystems = compootuers: builtins.unique (
-    map (h: h.system) 
-      (filter (h: h.hostname != null) compootuers)
-  );
-in {
+let
+  computeSystems =
+    compootuers: builtins.unique (map (h: h.system) (filter (h: h.hostname != null) compootuers));
+in
+{
   imports = [
     flake.treefmt-nix.flakeModule
   ];
@@ -60,6 +59,5 @@ in {
     }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
   );
 
-  computeSystems = computeSystems;
+  inherit computeSystems;
 }
-
