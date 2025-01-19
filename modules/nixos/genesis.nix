@@ -1,4 +1,4 @@
-{ localFlake, withSystem, ... }:
+{ flake, withSystem, ... }:
 {
   config,
   lib,
@@ -7,7 +7,7 @@
 }:
 {
   imports = [
-    localFlake.treefmt-nix.flakeModule
+    flake.treefmt-nix.flakeModule
   ];
   options.genesis = {
     compootuers = lib.mkOption {
@@ -44,7 +44,7 @@
       name = sub.hostname;
       value = withSystem sub.system (
         _:
-        localFlake.nixpkgs.lib.nixosSystem {
+        flake.nixpkgs.lib.nixosSystem {
           inherit (sub) system;
           specialArgs = withSystem sub.system (
             { inputs', self', ... }:
@@ -56,9 +56,9 @@
           modules = [
             { networking.hostName = sub.hostname; }
             sub.src
-            localFlake.self.nixosModules.default
-            localFlake.nixos-facter-modules.nixosModules.facter
-            localFlake.self.nixosModules.fakeFileSystems
+            flake.self.nixosModules.default
+            flake.nixos-facter-modules.nixosModules.facter
+            flake.self.nixosModules.fakeFileSystems
           ];
         }
       );
