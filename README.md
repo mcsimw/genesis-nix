@@ -2,32 +2,59 @@
 
 The **Genesis Module** is a NixOS flake module designed to simplify the configuration of multiple NixOS machines. It leverages a list of computer configurations, each defined by hostname, system architecture, and source of configuration, to automatically generate corresponding NixOS configurations.
 
-## Overview
+## Features
 
-The Genesis Module provides:
+- **Multi-Host Configuration**: Define configurations for multiple hosts using the `genesis.compootuers` option.
+- **Automatic Configuration Generation**: Automatically create `nixosConfigurations` for all defined hosts.
+- **Modular Integration**: Works seamlessly with [flake-parts](https://github.com/hercules-ci/flake-parts) and other flakes.
+- **Sane Defaults**: Applies reasonable default settings to all hosts for usability, security, and consistency.
+- **Support for Ephemeral Root**: Easily configure ZFS-based root filesystems with impermanence.
 
-- A list option `genesis.compootuers` where you can define multiple hosts.
-- Automatic generation of `nixosConfigurations` from the provided hosts configuration.
-- Integration with [flake-parts](https://github.com/hercules-ci/flake-parts) and other Nix flakes for a modular and maintainable setup.
+## Sane Defaults
 
-## Prerequisites
+The Genesis Module applies a set of sensible default settings to every host to ensure consistency and reduce configuration overhead. These include:
 
-- Basic familiarity with [NixOS](https://nixos.org) and the [Flakes](https://nixos.wiki/wiki/Flakes) feature.
-- A working NixOS setup using flakes.
-- [flake-parts](https://github.com/hercules-ci/flake-parts) integrated into your configuration.
-- The Genesis Module imported from its source repository (e.g., GitHub).
+- **Networking**:
+  - DHCP is enabled by default.
+  - `systemd-networkd` is used for managing network configurations.
 
-## Configuration Options
+- **Hardware**:
+  - 32-bit graphics support is enabled to improve compatibility.
+  - User accounts are immutable by default, meaning changes to users and groups are managed declaratively.
 
-The Genesis Module accepts a list of computer definitions under `genesis.compootuers`, where each entry includes:
+- **Security**:
+  - Polkit (authorization framework) is enabled.
+  - Real-time kit (rtkit) is enabled when PipeWire is used for audio.
 
-- `hostname`: (optional) The hostname of the machine. If omitted or set to `null`, the configuration for that entry is ignored.
-- `src`: The path to the configuration file or directory for the host.
-- `system`: The target system architecture (default: `"x86_64-linux"`).
+- **Services**:
+  - Disk trimming (`fstrim`) is enabled for maintaining SSD performance.
+  - PulseAudio is forcibly disabled in favor of alternative audio systems like PipeWire.
+  - EarlyOOM is enabled to gracefully handle out-of-memory situations.
+  - UDisks2 is enabled for disk management.
+  - D-Bus implementation is set to "broker" for improved performance.
+  - If ZFS is enabled:
+    - Automatic scrub and trim are performed daily for data integrity and performance.
 
-## Example Setup
+- **Environment**:
+  - Minimal environment variables are set for clean Nixpkgs configurations.
+  - No global default packages are installed.
 
-Below is a simplified example of how to initialize and use the Genesis Module within your own `flake.nix`:
+- **Programs**:
+  - `direnv` is enabled for project-specific environment management.
+  - Vim is enabled and set as the default editor.
+  - Git is always enabled, with Git LFS support for handling large files.
+
+- **Documentation**:
+  - Basic system documentation and man pages are enabled.
+  - Additional documentation (`doc`, `info`, `nixos`) is disabled to avoid clutter.
+
+- **Boot**:
+  - Systemd is used in the initrd for faster boot times and better compatibility.
+  - ZFS root import is disabled by default for stability in certain setups.
+
+## Example Usage
+
+Below is an example of how to initialize and use the Genesis Module in your `flake.nix`:
 
 ```nix
 {
@@ -37,23 +64,23 @@ Below is a simplified example of how to initialize and use the Genesis Module wi
     nixpkgs.url = "github:nixos/nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
     NixCastratumStillbirth.url = "github:mcsimw/NixCastratumStillbirth";
-    # Add other required inputs...
   };
 
-  outputs = inputs:
+  outputs = inputs: 
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" ];
 
-      # Define the list of computers you want to configure
       genesis.compootuers = [
         {
           hostname = "nixos";
           src = ./.;
-          # Optional: system = "x86_64-linux";  # Defaults to "x86_64-linux"
         }
       ];
 
-      # Additional per-system configurations (optional)
+      imports = [
+        inputs.NixCastratumStillbirth.nixosModules.genesis
+      ];
+
       perSystem.treefmt = {
         projectRootFile = "flake.nix";
         programs = {
@@ -69,11 +96,5 @@ Below is a simplified example of how to initialize and use the Genesis Module wi
           dos2unix.priority = 4;
         };
       };
-
-      # Import the Genesis Module from your chosen source
-      imports = [
-        inputs.NixCastratumStillbirth.nixosModules.genesis
-      ];
     };
 }
-
