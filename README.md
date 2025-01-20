@@ -27,7 +27,7 @@ The Genesis Module applies a set of sensible default settings to every host to e
   - Real-time kit (rtkit) is enabled when PipeWire is used for audio.
 
 - **Services**:
-  - Disk trimming (`fstrim`) is enabled for maintaining SSD performance.
+  - Disk trimming (`fstrim`) is enabled for maintaining SSD performance. This will trim whatever ( filesystem && drive type ) it support, no reason not to keep enabled. Drives using filesystems like zfs will not utilize this feature ( they have their own implementation), but for example the vfat esp partiition actually utilizes it.
   - PulseAudio is forcibly disabled in favor of alternative audio systems like PipeWire.
   - EarlyOOM is enabled to gracefully handle out-of-memory situations.
   - UDisks2 is enabled for disk management.
@@ -72,8 +72,8 @@ Below is an example of how to initialize and use the Genesis Module in your `fla
 
       genesis.compootuers = [
         {
-          hostname = "nixos";
-          src = ./.;
+          hostname = "nixos"; # I hope I do not need to explain this
+          src = ./.; # This will read default.nix, and in there your configuration will reside ( you can of course point to any file or directory )
           system = "aarch64-linux" # Defaults to "x86_64-linux" if not defined
         }
       ];
