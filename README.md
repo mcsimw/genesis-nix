@@ -62,7 +62,7 @@ Below is an example of how to initialize and use the Genesis Module in your `fla
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    NixCastratumStillbirth.url = "github:mcsimw/NixCastratum";
+    NixCastratum.url = "github:mcsimw/NixCastratum";
   };
   outputs = inputs: 
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
