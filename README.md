@@ -59,17 +59,14 @@ Below is an example of how to initialize and use the Genesis Module in your `fla
 ```nix
 {
   description = "Your new nix config";
-
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
     NixCastratumStillbirth.url = "github:mcsimw/NixCastratumStillbirth";
   };
-
   outputs = inputs: 
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" ];
-
+      systems = [ "x86_64-linux" ]; # Put here all the arch types that your flake must support
       genesis.compootuers = [
         {
           hostname = "nixos"; # I hope I do not need to explain this
@@ -79,25 +76,8 @@ Below is an example of how to initialize and use the Genesis Module in your `fla
           system = "aarch64-linux" # Defaults to "x86_64-linux" if not defined
         }
       ];
-
       imports = [
         inputs.NixCastratumStillbirth.nixosModules.genesis
       ];
-
-      perSystem.treefmt = {
-        projectRootFile = "flake.nix";
-        programs = {
-          nixfmt.enable = true;
-          deadnix.enable = true;
-          statix.enable = true;
-          dos2unix.enable = true;
-        };
-        settings.formatter = {
-          deadnix.priority = 1;
-          statix.priority = 2;
-          nixfmt.priority = 3;
-          dos2unix.priority = 4;
-        };
-      };
     };
 }
