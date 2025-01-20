@@ -74,6 +74,7 @@ Below is an example of how to initialize and use the Genesis Module in your `fla
         {
           hostname = "nixos";
           src = ./.;
+          system = "aarch64-linux" # Defaults to "x86_64-linux" if not defined
         }
       ];
 
