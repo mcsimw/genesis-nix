@@ -12,6 +12,7 @@
   keep-going = true;
   connect-timeout = 5;
   sandbox = pkgs.stdenv.hostPlatform.isLinux;
+  download-buffer-size = 134217728;
   extra-experimental-features = [
     "nix-command"
     "flakes"
