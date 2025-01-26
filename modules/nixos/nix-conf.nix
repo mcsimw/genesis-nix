@@ -35,11 +35,11 @@
       );
       nixPath = [ "nixpkgs=flake:nixpkgs" ];
       channel.enable = false;
-      trusted-users = [ "@wheel" ];
-      allowed-users = lib.mapAttrsToList (_: u: u.name) (
-        lib.filterAttrs (_: user: user.isNormalUser) config.users.users
-      );
       settings = {
+        trusted-users = [ "@wheel" ];
+        allowed-users = lib.mapAttrsToList (_: u: u.name) (
+          lib.filterAttrs (_: user: user.isNormalUser) config.users.users
+        );
         "flake-registry" = "/etc/nix/registry.json";
       } // (import ../nix-settings.nix { inherit pkgs; });
     };
