@@ -12,10 +12,6 @@
   keep-going = true;
   connect-timeout = 5;
   sandbox = pkgs.stdenv.hostPlatform.isLinux;
-  trusted-users = [ "@wheel" ];
-  allowed-users = lib.mapAttrsToList (_: u: u.name) (
-    lib.filterAttrs (_: user: user.isNormalUser) config.users.users
-  );
   extra-experimental-features = [
     "nix-command"
     "flakes"
