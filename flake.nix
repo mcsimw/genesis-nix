@@ -57,6 +57,16 @@
               flake = inputs;
               inherit withSystem;
             };
+          genesis-iso =
+            {
+              lib,
+              withSystem,
+              ...
+            }:
+            lib.modules.importApply ./modules/nixos/genesis-iso.nix {
+              flake = inputs;
+              inherit withSystem;
+            };
           fakeFileSystems =
             { lib, ... }:
             lib.modules.importApply ./modules/nixos/fakeFileSystems {
