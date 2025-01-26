@@ -1,5 +1,5 @@
 { flake, withSystem, ... }:
-{ config, lib, inputs, ... }:
+{ config, lib, inputs, modulesPath, ... }:
 let
   configForSub = { sub, iso ? false }:
     let
