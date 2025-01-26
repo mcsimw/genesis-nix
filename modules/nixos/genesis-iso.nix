@@ -1,7 +1,17 @@
 { flake, withSystem, ... }:
-{ config, lib, inputs, modulesPath, ... }:
+{
+  config,
+  lib,
+  inputs,
+  modulesPath,
+  ...
+}:
 let
-  configForSub = { sub, iso ? false }:
+  configForSub =
+    {
+      sub,
+      iso ? false,
+    }:
     let
       baseModules = [
         { networking.hostName = sub.hostname; }
@@ -12,24 +22,25 @@ let
       ];
       isoModules = [
         {
-          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-minimal-new-kernel.nix" ];
+          imports = [ (modulesPath + "/installer/cd-dvd/installation-cd-base.nix") ];
           boot.initrd.systemd.enable = lib.mkForce false;
         }
       ];
     in
-      withSystem sub.system (_:
-        flake.nixpkgs.lib.nixosSystem {
-          inherit (sub) system;
-          specialArgs = withSystem sub.system (
-            { inputs', self', ... }:
-            {
-              inherit (config) packages;
-              inherit self' inputs' inputs;
-            }
-          );
-          modules = baseModules ++ lib.optionals iso isoModules;
-        }
-      );
+    withSystem sub.system (
+      _:
+      flake.nixpkgs.lib.nixosSystem {
+        inherit (sub) system;
+        specialArgs = withSystem sub.system (
+          { inputs', self', ... }:
+          {
+            inherit (config) packages;
+            inherit self' inputs' inputs;
+          }
+        );
+        modules = baseModules ++ lib.optionals iso isoModules;
+      }
+    );
 in
 {
   imports = [
@@ -54,22 +65,31 @@ in
           };
         }
       );
-      default = [];
+      default = [ ];
     };
   };
-  config.flake.nixosConfigurations =
-    builtins.listToAttrs (
-      lib.concatMap (sub:
-        if sub.hostname == null then [] else [
+  config.flake.nixosConfigurations = builtins.listToAttrs (
+    lib.concatMap (
+      sub:
+      if sub.hostname == null then
+        [ ]
+      else
+        [
           {
             name = sub.hostname;
-            value = configForSub { sub = sub; iso = false; };
+            value = configForSub {
+              inherit sub;
+              iso = false;
+            };
           }
           {
             name = "${sub.hostname}-iso";
-            value = configForSub { sub = sub; iso = true; };
+            value = configForSub {
+              inherit sub;
+              iso = true;
+            };
           }
         ]
-      ) config.genesis.compootuers
-    );
+    ) config.genesis.compootuers
+  );
 }
