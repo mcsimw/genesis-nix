@@ -5,6 +5,43 @@
   inputs,
   ...
 }:
+let
+  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
+  configForSub =
+    {
+      sub,
+      iso ? false,
+    }:
+    let
+      baseModules = [
+        { networking.hostName = sub.hostname; }
+        sub.src
+        flake.self.nixosModules.default
+        flake.nixos-facter-modules.nixosModules.facter
+        flake.self.nixosModules.fakeFileSystems
+      ];
+      isoModules = [
+        {
+          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+          boot.initrd.systemd.enable = lib.mkForce false;
+        }
+      ];
+    in
+    withSystem sub.system (
+      _:
+      flake.nixpkgs.lib.nixosSystem {
+        inherit (sub) system;
+        specialArgs = withSystem sub.system (
+          { inputs', self', ... }:
+          {
+            inherit (config) packages;
+            inherit self' inputs' inputs;
+          }
+        );
+        modules = baseModules ++ lib.optionals iso isoModules;
+      }
+    );
+in
 {
   imports = [
     flake.treefmt-nix.flakeModule
@@ -17,51 +54,42 @@
             hostname = lib.mkOption {
               type = lib.types.nullOr lib.types.str;
               default = null;
-              description = ''
-                Optional hostname. If null or not set, this submodule is ignored.
-              '';
             };
             src = lib.mkOption {
               type = lib.types.path;
-              description = ''
-                The path to the configuration file or directory for this host.
-              '';
             };
             system = lib.mkOption {
               type = lib.types.str;
               default = "x86_64-linux";
-              description = ''
-                The Nix system architecture (e.g., "x86_64-linux", "aarch64-linux").
-              '';
             };
           };
         }
       );
+      default = [ ];
     };
   };
   config.flake.nixosConfigurations = builtins.listToAttrs (
-    map (sub: {
-      name = sub.hostname;
-      value = withSystem sub.system (
-        _:
-        flake.nixpkgs.lib.nixosSystem {
-          inherit (sub) system;
-          specialArgs = withSystem sub.system (
-            { inputs', self', ... }:
-            {
-              inherit (config) packages;
-              inherit self' inputs' inputs;
-            }
-          );
-          modules = [
-            { networking.hostName = sub.hostname; }
-            sub.src
-            flake.self.nixosModules.default
-            flake.nixos-facter-modules.nixosModules.facter
-            flake.self.nixosModules.fakeFileSystems
-          ];
-        }
-      );
-    }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
+    lib.concatMap (
+      sub:
+      if sub.hostname == null then
+        [ ]
+      else
+        [
+          {
+            name = sub.hostname;
+            value = configForSub {
+              inherit sub;
+              iso = false;
+            };
+          }
+          {
+            name = "${sub.hostname}-iso";
+            value = configForSub {
+              inherit sub;
+              iso = true;
+            };
+          }
+        ]
+    ) config.genesis.compootuers
   );
 }
