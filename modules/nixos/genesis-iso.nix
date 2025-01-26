@@ -39,30 +39,66 @@
       );
     };
   };
-  config.flake.nixosConfigurations = builtins.listToAttrs (
-    map (sub: {
-      name = sub.hostname;
-      value = withSystem sub.system (
-        _:
-        flake.nixpkgs.lib.nixosSystem {
-          inherit (sub) system;
-          specialArgs = withSystem sub.system (
-            { inputs', self', ... }:
-            {
-              inherit (config) packages;
-              inherit self' inputs' inputs;
-            }
-          );
-          modules = [
-            { networking.hostName = sub.hostname; }
-            sub.src
-          #  flake.self.nixosModules.default
-            flake.nixos-facter-modules.nixosModules.facter
-            flake.self.nixosModules.fakeFileSystems
-            flake.self.nixosModules.sane
-          ];
+  configForSub =
+    {
+      sub,
+      iso ? false,
+    }:
+    let
+      baseModules = [
+        { networking.hostName = sub.hostname; }
+        sub.src
+        flake.self.nixosModules.default
+        flake.nixos-facter-modules.nixosModules.facter
+        flake.self.nixosModules.fakeFileSystems
+      ];
+      modulesPath = "${inputs.nixpkgs.outPath}/nixos";
+      isoModules = [
+        {
+          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-minimal-new-kernel.nix" ];
+          boot.initrd.systemd.enable = lib.mkForce false;
         }
-      );
-    }) (lib.filter (sub: sub.hostname != null) config.genesis.compootuers)
+      ];
+    in
+    withSystem sub.system (
+      _:
+      flake.nixpkgs.lib.nixosSystem {
+        inherit (sub) system;
+        specialArgs = withSystem sub.system (
+          { inputs', self', ... }:
+          {
+            inherit (config) packages;
+            inherit self' inputs' inputs;
+          }
+        );
+        # Append the isoModules only if iso=true, otherwise empty
+        modules = baseModules ++ lib.optional iso isoModules;
+      }
+    );
+  config.flake.nixosConfigurations = builtins.listToAttrs (
+    lib.concatMap (
+      sub:
+      if sub.hostname == null then
+        [ ]
+      else
+        [
+          {
+            name = sub.hostname;
+            # normal (non-iso) host
+            value = configForSub {
+              inherit sub;
+              iso = false;
+            };
+          }
+          {
+            name = "${sub.hostname}-iso";
+            # iso variant
+            value = configForSub {
+              inherit sub;
+              iso = true;
+            };
+          }
+        ]
+    ) config.genesis.compootuers
   );
 }
