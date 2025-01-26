@@ -3,10 +3,10 @@
   config,
   lib,
   inputs,
-  modulesPath,
   ...
 }:
 let
+  modulesPath = "${inputs.nixpkgs.outPath}/nixos";
   configForSub =
     {
       sub,
@@ -22,7 +22,7 @@ let
       ];
       isoModules = [
         {
-          imports = [ (modulesPath + "/installer/cd-dvd/installation-cd-base.nix") ];
+          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
           boot.initrd.systemd.enable = lib.mkForce false;
         }
       ];
