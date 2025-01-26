@@ -30,6 +30,10 @@
       inputs ? "nix" && !(inputs ? "lix-module")
     ) inputs.nix.overlays.default;
     nix = {
+      trusted-users = [ "@wheel" ];
+      allowed-users = lib.mapAttrsToList (_: u: u.name) (
+        lib.filterAttrs (_: user: user.isNormalUser) config.users.users
+      );
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
       );
