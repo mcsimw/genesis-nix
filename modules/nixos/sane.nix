@@ -11,17 +11,17 @@
     rtkit.enable = config.services.pipewire.enable;
   };
   services = {
-    fstrim.enable = lib.mkDefault true;
+    fstrim.enable = lib.mkForce true;
     pulseaudio.enable = lib.mkForce false;
-    earlyoom.enable = lib.mkDefault true;
-    udisks2.enable = lib.mkDefault true;
-    dbus.implementation = lib.mkDefault "broker";
+    earlyoom.enable = lib.mkForce true;
+    udisks2.enable = lib.mkForce true;
+    dbus.implementation = lib.mkForce "broker";
     zfs = lib.mkIf config.boot.zfs.enabled {
-      autoScrub = lib.mkDefault {
+      autoScrub = lib.mkForce {
         enable = true;
         interval = "daily";
       };
-      trim = lib.mkDefault {
+      trim = lib.mkForce {
         enable = true;
         interval = "daily";
       };
@@ -33,27 +33,27 @@
   };
   programs = {
     direnv.enable = true;
-    command-not-found.enable = lib.mkDefault false;
+    command-not-found.enable = lib.mkForce false;
     vim = {
       enable = lib.mkDefault true;
       defaultEditor = true;
     };
     fuse.userAllowOther = true;
-    dconf.enable = config.hardware.graphics.enable;
+    dconf.enable = lib.mkForce config.hardware.graphics.enable;
     git = {
       enable = lib.mkForce true;
       lfs.enable = true;
     };
   };
   documentation = {
-    enable = lib.mkDefault true;
-    man.enable = lib.mkDefault true;
+    enable = lib.mkForce true;
+    man.enable = lib.mkForce true;
     doc.enable = lib.mkForce false;
     nixos.enable = lib.mkForce false;
     info.enable = lib.mkForce false;
   };
   boot = {
-    initrd.systemd.enable = lib.mkDefault true;
+    initrd.systemd.enable = lib.mkForce true;
     zfs.forceImportRoot = lib.mkForce false;
   };
 }
