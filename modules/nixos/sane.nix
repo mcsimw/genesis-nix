@@ -1,14 +1,14 @@
 { config, lib, ... }:
 {
-  networking = lib.mkDefault {
+  networking = lib.mkForce {
     useDHCP = true;
     useNetworkd = true;
   };
   hardware.graphics.enable32Bit = lib.mkDefault true;
   users.mutableUsers = lib.mkDefault false;
   security = {
-    polkit.enable = lib.mkDefault true;
-    rtkit.enable = config.services.pipewire.enable;
+    polkit.enable = lib.mkForce true;
+    rtkit.enable = lib.mkForce config.services.pipewire.enable;
   };
   services = {
     fstrim.enable = lib.mkForce true;
