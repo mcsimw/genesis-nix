@@ -3,7 +3,6 @@
 let
   configForSub = { sub, iso ? false }:
     let
-      modulesPath = "${inputs.nixpkgs.outPath}/nixos";
       baseModules = [
         { networking.hostName = sub.hostname; }
         sub.src
