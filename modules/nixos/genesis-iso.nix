@@ -6,7 +6,7 @@
   ...
 }:
 let
-  modulesPath = "${inputs.nixpkgs.outPath}/nixos";
+  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
   configForSub =
     {
       sub,
