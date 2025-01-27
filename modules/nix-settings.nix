@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+_:
 {
   warn-dirty = false;
   keep-derivations = true;

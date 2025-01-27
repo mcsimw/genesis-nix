@@ -29,7 +29,7 @@ let
         }
       ];
       nonIsoModules = [
-#        inputs.nixpkgs.nixosModules.readOnlyPkgs
+        #        inputs.nixpkgs.nixosModules.readOnlyPkgs
         { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
       ];
     in
@@ -49,6 +49,21 @@ let
     );
 in
 {
+
+  perSystem =
+    {
+      pkgs,
+      system,
+      ...
+    }:
+    {
+      _module.args.pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+
+    };
+
   imports = [
     flake.treefmt-nix.flakeModule
   ];
