@@ -29,7 +29,7 @@ let
       ];
       nonIsoModules = [
         flake.nixpkgs.nixosModules.readOnlyPkgs
-        { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
+        { nixpkgs.pkgs = withSystem "x86_64-linux" ({ pkgs, ... }: pkgs); }
       ];
     in
     withSystem sub.system (
