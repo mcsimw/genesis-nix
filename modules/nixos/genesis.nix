@@ -6,7 +6,7 @@
   ...
 }:
 let
-  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
+  modulesPath = "${flake.nixpkgs.outPath}/nixos/modules";
   configForSub =
     {
       sub,
@@ -16,8 +16,8 @@ let
       baseModules = [
         { networking.hostName = sub.hostname; }
         sub.src
-      #  flake.self.nixosModules.default
-      #  flake.self.nixosModules.fakeFileSystems
+        #  flake.self.nixosModules.default
+        #  flake.self.nixosModules.fakeFileSystems
       ];
       isoModules = [
         {
@@ -28,13 +28,13 @@ let
         }
       ];
       nonIsoModules = [
-        inputs.nixpkgs.nixosModules.readOnlyPkgs
-      #  { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
+        flake.nixpkgs.nixosModules.readOnlyPkgs
+        #  { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
       ];
     in
     withSystem sub.system (
       _:
-      inputs.nixpkgs.lib.nixosSystem {
+      flake.nixpkgs.lib.nixosSystem {
         inherit (sub) system;
         specialArgs = withSystem sub.system (
           { inputs', self', ... }:

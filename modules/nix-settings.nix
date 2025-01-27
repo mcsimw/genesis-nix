@@ -1,5 +1,4 @@
-_:
-{
+_: {
   warn-dirty = false;
   keep-derivations = true;
   keep-outputs = true;
