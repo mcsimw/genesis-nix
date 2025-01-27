@@ -18,7 +18,7 @@ let
         sub.src
         #flake.self.nixosModules.default
         flake.nixos-facter-modules.nixosModules.facter
-        flake.self.nixosModules.fakeFileSystems
+        #flake.self.nixosModules.fakeFileSystems
       ];
       isoModules = [
         {
