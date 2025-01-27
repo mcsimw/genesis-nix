@@ -3,6 +3,7 @@
   networking = lib.mkForce {
     useDHCP = true;
     useNetworkd = true;
+    hostId = lib.mkDefault (builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName));
   };
   hardware.graphics.enable32Bit = lib.mkDefault true;
   users.mutableUsers = lib.mkDefault false;
