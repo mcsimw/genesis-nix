@@ -22,6 +22,7 @@ let
         flake.self.nixosModules.default
         flake.nixos-facter-modules.nixosModules.facter
         flake.self.nixosModules.fakeFileSystems
+        flake.nixpkgs.nixosModules.readOnlyPkgs
       ];
       isoModules = [
         {

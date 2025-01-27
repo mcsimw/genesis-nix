@@ -54,7 +54,6 @@
         defaultModules
         // {
           default.imports = builtins.attrValues defaultModules;
-          packages = ./modules/packages;
           genesis =
             {
               lib,
