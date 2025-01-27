@@ -14,8 +14,8 @@ let
     }:
     let
       baseModules = [
-        { 
-          networking.hostName = sub.hostname; 
+        {
+          networking.hostName = sub.hostname;
         }
         sub.src
         flake.self.nixosModules.default
@@ -31,9 +31,7 @@ let
           networking.wireless.enable = lib.mkForce false;
         }
       ];
-      nonIsoModules = [
-          nixpkgs.pkgs = withSystem sub.system ({pkgs, ...}: pkgs);
-      ];
+      nonIsoModules = [ { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); } ];
     in
     withSystem sub.system (
       _:
@@ -73,7 +71,6 @@ in
           };
         }
       );
-      default = [ ];
     };
   };
   config.flake.nixosConfigurations = builtins.listToAttrs (
