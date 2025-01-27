@@ -26,9 +26,6 @@
       tools.nixos-option.enable = false;
       rebuild.enableNg = true;
     };
-    nixpkgs.overlays = lib.optional (
-      inputs ? "nix" && !(inputs ? "lix-module")
-    ) inputs.nix.overlays.default;
     nix = {
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
