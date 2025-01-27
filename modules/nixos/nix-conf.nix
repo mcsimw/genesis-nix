@@ -33,7 +33,7 @@
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
       );
-      nixPath = ["nixpkgs=flake:nixpkgs"];
+      nixPath = [ "nixpkgs=flake:nixpkgs" ];
       channel.enable = false;
       settings = {
         trusted-users = [ "@wheel" ];

@@ -15,6 +15,10 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    wrapper-manager = {
+      url = "github:viperML/wrapper-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs:
@@ -56,6 +60,15 @@
             lib.modules.importApply ./modules/nixos/genesis.nix {
               flake = inputs;
               inherit withSystem;
+            };
+          packages =
+            {
+              lib,
+              flake-parts-lib,
+              ...
+            }:
+            lib.modules.importApply ./modules/packages {
+              inherit lib flake-parts-lib;
             };
           fakeFileSystems =
             { lib, ... }:
