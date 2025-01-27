@@ -16,7 +16,6 @@ let
       baseModules = [
         { 
           networking.hostName = sub.hostname; 
-          nixpkgs.pkgs = withSystem sub.system ({pkgs, ...}: pkgs);
         }
         sub.src
         flake.self.nixosModules.default
@@ -32,6 +31,9 @@ let
           networking.wireless.enable = lib.mkForce false;
         }
       ];
+      nonIsoModules = [
+          nixpkgs.pkgs = withSystem sub.system ({pkgs, ...}: pkgs);
+      ];
     in
     withSystem sub.system (
       _:
@@ -44,7 +46,7 @@ let
             inherit self' inputs' inputs;
           }
         );
-        modules = baseModules ++ lib.optionals iso isoModules;
+        modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
     );
 in
