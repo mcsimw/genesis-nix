@@ -8,7 +8,7 @@
       pkgs = import inputs.nixpkgs {
         inherit system;
         overlays = [
-          inputs.emacs.overlays.default
+          flake.emacs.overlays.default
         ];
         config.allowUnfree = true;
       };
