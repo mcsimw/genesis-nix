@@ -42,7 +42,6 @@
       defaultEditor = true;
     };
     fuse.userAllowOther = true;
-    dconf.enable = lib.mkForce config.hardware.graphics.enable;
     git = {
       enable = lib.mkForce true;
       lfs.enable = lib.mkDefault true;

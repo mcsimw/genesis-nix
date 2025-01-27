@@ -19,6 +19,9 @@
       url = "github:viperML/wrapper-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+    };
   };
   outputs =
     inputs:
@@ -62,14 +65,9 @@
               inherit withSystem;
             };
           packages =
-            {
-              lib,
-              flake-parts-lib,
-              ...
-            }:
+            { lib, ... }:
             lib.modules.importApply ./modules/packages {
               flake = inputs;
-              inherit lib flake-parts-lib;
             };
           fakeFileSystems =
             { lib, ... }:
