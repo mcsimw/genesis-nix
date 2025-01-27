@@ -1,4 +1,3 @@
-{ flake, ... }:
 {
   config,
   inputs,
@@ -15,7 +14,7 @@
       _module.args.pkgs = import inputs.nixpkgs {
         inherit system;
         overlays = [
-          flake.emacs-overlay.overlays.default
+          inputs.emacs-overlay.overlays.default
         ];
         config.allowUnfree = true;
       };
