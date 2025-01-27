@@ -49,23 +49,9 @@ let
     );
 in
 {
-
-  perSystem =
-    {
-      pkgs,
-      system,
-      ...
-    }:
-    {
-      _module.args.pkgs = import inputs.nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-
-    };
-
   imports = [
     flake.treefmt-nix.flakeModule
+    ./shit.nix
   ];
   options.genesis = {
     compootuers = lib.mkOption {
