@@ -28,8 +28,8 @@ let
         }
       ];
       nonIsoModules = [
-      #  inputs.nixpkgs.nixosModules.readOnlyPkgs
-        { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
+        inputs.nixpkgs.nixosModules.readOnlyPkgs
+      #  { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
       ];
     in
     withSystem sub.system (
