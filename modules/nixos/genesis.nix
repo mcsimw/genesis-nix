@@ -29,8 +29,8 @@ let
         }
       ];
       nonIsoModules = [
-        flake.nixpkgs.nixosModules.readOnlyPkgs
-        { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
+        #flake.nixpkgs.nixosModules.readOnlyPkgs
+        #{ nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
       ];
     in
     withSystem sub.system (
