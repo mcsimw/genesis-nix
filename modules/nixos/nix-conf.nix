@@ -6,7 +6,6 @@
   ...
 }:
 {
-  imports = lib.optional (inputs ? "lix-module") inputs.lix-module.nixosModules.default;
   options = with lib; {
     nix.inputsToPin = mkOption {
       type = with types; listOf str;
