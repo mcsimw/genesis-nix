@@ -40,7 +40,6 @@ let
         specialArgs = withSystem sub.system (
           { inputs', self', ... }:
           {
-            inherit (config) packages;
             inherit self' inputs' inputs;
           }
         );
