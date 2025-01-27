@@ -14,24 +14,24 @@ let
     }:
     let
       baseModules = [
-        {
-          networking.hostName = sub.hostname;
-        }
+        { networking.hostName = sub.hostname; }
         sub.src
         flake.self.nixosModules.default
         flake.nixos-facter-modules.nixosModules.facter
         flake.self.nixosModules.fakeFileSystems
-        flake.nixpkgs.nixosModules.readOnlyPkgs
       ];
       isoModules = [
         {
-#          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
           boot.initrd.systemd.enable = lib.mkForce false;
-#          isoImage.squashfsCompression = "lz4";
-#          networking.wireless.enable = lib.mkForce false;
+          isoImage.squashfsCompression = "lz4";
+          networking.wireless.enable = lib.mkForce false;
         }
       ];
-      nonIsoModules = [ { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); } ];
+      nonIsoModules = [
+        { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
+        flake.nixpkgs.nixosModules.readOnlyPkgs
+      ];
     in
     withSystem sub.system (
       _:
