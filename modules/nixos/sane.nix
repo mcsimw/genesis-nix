@@ -1,8 +1,8 @@
 { config, lib, ... }:
 {
-  networking = lib.mkForce {
-    useDHCP = true;
-    useNetworkd = true;
+  networking = {
+    useDHCP = lib.mkDefault true;
+    useNetworkd = lib.mkDefault true;
     hostId = lib.mkDefault (builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName));
   };
   hardware.graphics.enable32Bit = lib.mkDefault true;
