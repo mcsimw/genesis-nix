@@ -6,7 +6,7 @@
   ...
 }:
 let
-  modulesPath = "${flake.nixpkgs.outPath}/nixos/modules";
+  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
   configForSub =
     {
       sub,
@@ -35,7 +35,7 @@ let
     in
     withSystem sub.system (
       _:
-      flake.nixpkgs.lib.nixosSystem {
+      inputs.nixpkgs.lib.nixosSystem {
         inherit (sub) system;
         specialArgs = withSystem sub.system (
           { inputs', self', ... }:
