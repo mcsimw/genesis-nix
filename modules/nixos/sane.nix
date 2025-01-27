@@ -33,7 +33,7 @@
     defaultPackages = [ ];
   };
   programs = {
-    direnv.enable = true;
+    direnv.enable = lib.mkForce true;
     command-not-found.enable = lib.mkForce false;
     vim = {
       enable = lib.mkDefault true;
@@ -43,7 +43,7 @@
     dconf.enable = lib.mkForce config.hardware.graphics.enable;
     git = {
       enable = lib.mkForce true;
-      lfs.enable = true;
+      lfs.enable = lib.mkDefault true;
     };
   };
   documentation = {
