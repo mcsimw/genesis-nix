@@ -1,7 +1,6 @@
 {
   description = "this is something:(";
   inputs = {
-    nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
     nixpkgs.url = "github:nixos/nixpkgs";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -18,9 +17,6 @@
     wrapper-manager = {
       url = "github:viperML/wrapper-manager";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-    emacs-overlay = {
-      url = "github:nix-community/emacs-overlay";
     };
   };
   outputs =
