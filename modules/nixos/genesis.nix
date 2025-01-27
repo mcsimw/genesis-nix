@@ -50,7 +50,6 @@ in
 {
   imports = [
     flake.treefmt-nix.flakeModule
-    ./shit.nix
   ];
   options.genesis = {
     compootuers = lib.mkOption {
