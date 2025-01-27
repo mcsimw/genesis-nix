@@ -68,6 +68,7 @@
               ...
             }:
             lib.modules.importApply ./modules/packages {
+              flake = inputs;
               inherit lib flake-parts-lib;
             };
           fakeFileSystems =

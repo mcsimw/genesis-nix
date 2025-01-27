@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, flake-parts-lib, flake, ... }:
 { config, inputs, ... }:
 
 {
@@ -56,7 +56,7 @@
         #        nix = callPackage ./nix-overrides/default.nix { };
       };
       finalPackages =
-        (inputs.wrapper-manager.lib {
+        (flake.wrapper-manager.lib {
           pkgs = pkgs // stage1;
           modules = [
             ./wrapper-manager/chrome/default.nix
