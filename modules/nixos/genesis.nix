@@ -25,10 +25,10 @@ let
       ];
       isoModules = [
         {
-          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+#          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
           boot.initrd.systemd.enable = lib.mkForce false;
-          isoImage.squashfsCompression = "lz4";
-          networking.wireless.enable = lib.mkForce false;
+#          isoImage.squashfsCompression = "lz4";
+#          networking.wireless.enable = lib.mkForce false;
         }
       ];
       nonIsoModules = [ { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); } ];
