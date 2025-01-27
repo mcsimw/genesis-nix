@@ -16,7 +16,7 @@ let
       baseModules = [
         { 
           networking.hostName = sub.hostname; 
-          nixpkgs.pkgs = withSystem system ({pkgs, ...}: pkgs);
+          nixpkgs.pkgs = withSystem sub.system ({pkgs, ...}: pkgs);
         }
         sub.src
         flake.self.nixosModules.default
