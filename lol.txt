@@ -1,0 +1,679 @@
+{
+  manual = {
+    html.enable = false;
+    json.enable = false;
+    manpages.enable = false;
+  };
+}
+{
+  lib,
+  config,
+  pkgs,
+  inputs ? throw "Pass inputs to specialArgs or extraSpecialArgs",
+  ...
+}:
+{
+  options = with lib; {
+    nix.inputsToPin = mkOption {
+      type = with types; listOf str;
+      default = [ "nixpkgs" ];
+      example = [
+        "nixpkgs"
+        "nixpkgs-master"
+      ];
+      description = ''
+        Names of flake inputs to pin
+      '';
+    };
+  };
+  config = {
+    nix = {
+      registry = lib.listToAttrs (
+        map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
+      );
+      settings = {
+        "flake-registry" = "${config.xdg.configHome}/nix/registry.json";
+      } // (import ../nix-settings.nix { inherit pkgs; });
+    };
+  };
+}
+{ diskName, device, ... }:
+{
+  disko.devices = {
+    disk = {
+      "${diskName}" = {
+        type = "disk";
+        inherit device;
+        content = {
+          type = "gpt";
+          partitions = {
+            "esp" = {
+              type = "EF00";
+              size = "1G";
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
+                mountOptions = [
+                  "dmask=0022"
+                  "fmask=0022"
+                  "umask=0077"
+                ];
+              };
+            };
+            "nix" = {
+              size = "100%";
+              content = {
+                type = "filesystem";
+                format = "bcachefs";
+                mountpoint = "/nix";
+                extraArgs = [
+                  "-f"
+                  "--compression=zstd"
+                  "--discard"
+                  "--encrypted"
+                ];
+                mountOptions = [
+                  "defaults"
+                  "noatime"
+                ];
+              };
+            };
+          };
+        };
+      };
+    };
+    nodev = {
+      "/" = {
+        fsType = "tmpfs";
+        mountOptions = [
+          "size=1G"
+          "mode=755"
+        ];
+      };
+    };
+  };
+}
+{ diskName }:
+{
+  type = "EF00";
+  size = "1G";
+  content = {
+    type = "filesystem";
+    format = "vfat";
+    mountpoint = "/boot";
+    mountOptions = [
+      "dmask=0022"
+      "fmask=0022"
+      "umask=0077"
+    ];
+    extraArgs = [
+      "-n"
+      "${diskName}-esp"
+    ];
+  };
+}
+{
+  ashift,
+  diskName,
+  device,
+  swapSize,
+  ...
+}:
+let
+  esp = import ./esp.nix { inherit diskName; };
+in
+{
+  disko.devices = {
+    disk = {
+      ${diskName} = {
+        type = "disk";
+        inherit device;
+        content = {
+          type = "gpt";
+          partitions = {
+            inherit esp;
+            encryptedSwap = {
+              size = "${swapSize}";
+              content = {
+                type = "swap";
+                randomEncryption = true;
+                discardPolicy = "both";
+                priority = 100;
+              };
+            };
+            zfsos = {
+              size = "100%";
+              content = {
+                type = "zfs";
+                pool = "${diskName}-zfsos";
+              };
+            };
+          };
+        };
+      };
+    };
+    zpool = {
+      "${diskName}-zfsos" = {
+        type = "zpool";
+        options = {
+          autotrim = "off";
+          inherit ashift;
+        };
+        rootFsOptions = {
+          compression = "zstd";
+          acltype = "posixacl";
+          atime = "off";
+          xattr = "sa";
+          normalization = "formD";
+          mountpoint = "none";
+          canmount = "off";
+          encryption = "aes-256-gcm";
+          keyformat = "passphrase";
+          keylocation = "prompt";
+          sync = "disabled";
+          dnodesize = "auto";
+        };
+        datasets = {
+          faketmpfs = {
+            type = "zfs_fs";
+            mountpoint = "/";
+            options.mountpoint = "/";
+          };
+          nix = {
+            type = "zfs_fs";
+            mountpoint = "/nix";
+            options.mountpoint = "/nix";
+          };
+          tmp = {
+            type = "zfs_fs";
+            mountpoint = "/tmp";
+            options.mountpoint = "/tmp";
+          };
+          persist = {
+            type = "zfs_fs";
+            mountpoint = "/persist";
+            options.mountpoint = "/persist";
+          };
+          ${diskName} = {
+            type = "zfs_fs";
+            mountpoint = "/mnt/${diskName}";
+            options.mountpoint = "/mnt/${diskName}";
+          };
+          reserved = {
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+              reservation = "10G";
+            };
+          };
+        };
+        postCreateHook = "zfs snapshot ${diskName}-zfsos/faketmpfs@blank";
+      };
+    };
+  };
+}
+{ lib, config, ... }:
+let
+  cfg = config.fakeFileSystems.nix;
+in
+{
+  config = lib.mkIf (cfg.template == "bcachefsos") (
+    import ../disko-templates/bcachefsos.nix { inherit (cfg) device diskName; }
+  );
+}
+{ flake, ... }:
+{ lib, ... }:
+{
+  imports = [
+    flake.disko.nixosModules.disko
+    ./zfsos.nix
+    ./bcachefsos.nix
+  ];
+  options.fakeFileSystems.nix = {
+    enable = lib.mkEnableOption "Enables nix filesystem";
+    template = lib.mkOption {
+      type = lib.types.nullOr (
+        lib.types.enum [
+          "zfsos"
+          "bcachefsos"
+        ]
+      );
+      default = null;
+    };
+    device = lib.mkOption {
+      type = lib.types.str;
+      description = "The device to use for the disk";
+    };
+    diskName = lib.mkOption {
+      type = lib.types.str;
+      description = "name of disk";
+    };
+    ashift = lib.mkOption {
+      type = lib.types.str;
+      description = "ashift of disk";
+    };
+    swapSize = lib.mkOption {
+      type = lib.types.str;
+      description = "size of swap partition";
+    };
+  };
+}
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.zfs-rollback;
+  cfgZfs = config.boot.zfs;
+in
+{
+  options = {
+    zfs-rollback = {
+      enable = lib.mkEnableOption "Impermanence on safe-shutdown through ZFS snapshots";
+      volume = lib.mkOption {
+        type = lib.types.str;
+        default = null;
+        example = "zroot/ROOT/empty";
+        description = ''
+          Full description to the volume including pool.
+          This volume must have a snapshot to an "empty" state.
+          WARNING: The volume will be rolled back to the snapshot on every safe-shutdown.
+        '';
+      };
+      snapshot = lib.mkOption {
+        type = lib.types.str;
+        default = null;
+        example = "start";
+        description = ''
+          Snapshot of the volume in an "empty" state to roll back to.
+        '';
+      };
+    };
+  };
+  config = lib.mkIf cfg.enable {
+    systemd.shutdownRamfs.contents."/etc/systemd/system-shutdown/zpool".source = lib.mkForce (
+      pkgs.writeShellScript "zpool-sync-shutdown" ''
+        ${cfgZfs.package}/bin/zfs rollback -r "${cfg.volume}@${cfg.snapshot}"
+        exec ${cfgZfs.package}/bin/zpool sync
+      ''
+    );
+    systemd.shutdownRamfs.storePaths = [ "${cfgZfs.package}/bin/zfs" ];
+  };
+}
+{ lib, config, ... }:
+let
+  cfg = config.fakeFileSystems.nix;
+in
+{
+  imports = [ ./zfs-rollback.nix ];
+  config = lib.mkIf (cfg.enable && cfg.template == "zfsos") (
+    {
+      boot.kernelParams = [ "nohibernate" ];
+      fileSystems = {
+        "/".neededForBoot = true;
+        "/persist".neededForBoot = true;
+        "/mnt/${cfg.diskName}".neededForBoot = true;
+      };
+      zfs-rollback = {
+        enable = true;
+        snapshot = "blank";
+        volume = "${cfg.diskName}-zfsos/faketmpfs";
+      };
+    }
+    // (import ../disko-templates/zfsos.nix {
+      inherit (cfg)
+        diskName
+        device
+        ashift
+        swapSize
+        ;
+    })
+  );
+}
+{
+  lib,
+  config,
+  options,
+  ...
+}:
+{
+  config = lib.optionalAttrs (options ? home-manager) {
+    home-manager = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      backupFileExtension = "old";
+      verbose = true;
+      sharedModules = [
+        {
+          home.stateVersion = lib.mkForce config.system.stateVersion;
+          nix.package = lib.mkForce config.nix.package;
+          nixpkgs.config.allowUnfree = true;
+        }
+      ];
+    };
+  };
+}
+{
+  lib,
+  config,
+  options,
+  ...
+}:
+{
+  config = lib.optionalAttrs (options.environment ? persistence) {
+    environment.persistence."/persist" = {
+      enable = true;
+      hideMounts = true;
+      directories = [
+        "/var/lib/nixos"
+        "/var/log"
+        "/var/lib/systemd/coredump"
+      ];
+    };
+  };
+}
+{ config, lib, ... }:
+{
+  networking = {
+    useDHCP = lib.mkDefault true;
+    useNetworkd = lib.mkDefault true;
+    hostId = lib.mkForce (
+      builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
+    );
+  };
+  hardware.graphics.enable32Bit = lib.mkDefault true;
+  users.mutableUsers = lib.mkDefault false;
+  security = {
+    polkit.enable = lib.mkForce true;
+    rtkit.enable = lib.mkForce config.services.pipewire.enable;
+  };
+  services = {
+    fstrim.enable = lib.mkForce true;
+    pulseaudio.enable = lib.mkForce false;
+    earlyoom.enable = lib.mkForce true;
+    udisks2.enable = lib.mkForce true;
+    dbus.implementation = lib.mkForce "broker";
+    zfs = lib.mkIf config.boot.zfs.enabled {
+      autoScrub = lib.mkForce {
+        enable = true;
+        interval = "daily";
+      };
+      trim = lib.mkForce {
+        enable = true;
+        interval = "daily";
+      };
+    };
+  };
+  environment = {
+    variables.NIXPKGS_CONFIG = lib.mkForce "";
+    defaultPackages = [ ];
+  };
+  programs = {
+    direnv.enable = lib.mkForce true;
+    command-not-found.enable = lib.mkForce false;
+    vim = {
+      enable = lib.mkDefault true;
+      defaultEditor = true;
+    };
+    fuse.userAllowOther = true;
+    git = {
+      enable = lib.mkForce true;
+      lfs.enable = lib.mkDefault true;
+    };
+  };
+  documentation = {
+    enable = lib.mkForce true;
+    man.enable = lib.mkForce true;
+    doc.enable = lib.mkForce false;
+    nixos.enable = lib.mkForce false;
+    info.enable = lib.mkForce false;
+  };
+  boot = {
+    initrd.systemd.enable = lib.mkDefault true;
+    zfs.forceImportRoot = lib.mkForce false;
+  };
+}
+{
+  lib,
+  config,
+  pkgs,
+  inputs ? throw "Pass inputs to specialArgs or extraSpecialArgs",
+  ...
+}:
+{
+  options = with lib; {
+    nix.inputsToPin = mkOption {
+      type = with types; listOf str;
+      default = [ "nixpkgs" ];
+      example = [
+        "nixpkgs"
+        "nixpkgs-master"
+      ];
+      description = ''
+        Names of flake inputs to pin
+      '';
+    };
+  };
+  config = {
+    environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
+    system = {
+      #      tools.nixos-option.enable = false;
+      rebuild.enableNg = true;
+    };
+    nix = {
+      registry = lib.listToAttrs (
+        map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
+      );
+      nixPath = [ "nixpkgs=flake:nixpkgs" ];
+      channel.enable = false;
+      settings = {
+        trusted-users = [ "@wheel" ];
+        allowed-users = lib.mapAttrsToList (_: u: u.name) (
+          lib.filterAttrs (_: user: user.isNormalUser) config.users.users
+        );
+        "flake-registry" = "/etc/nix/registry.json";
+      } // (import ../nix-settings.nix { inherit pkgs; });
+    };
+  };
+}
+{ flake, withSystem, ... }:
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
+let
+  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
+  configForSub =
+    {
+      sub,
+      iso ? false,
+    }:
+    let
+      baseModules = [
+        { networking.hostName = sub.hostname; }
+        sub.src
+        flake.self.nixosModules.default
+        flake.nixos-facter-modules.nixosModules.facter
+        flake.self.nixosModules.fakeFileSystems
+      ];
+      isoModules = [
+        {
+          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+          boot.initrd.systemd.enable = lib.mkForce false;
+          isoImage.squashfsCompression = "lz4";
+          networking.wireless.enable = lib.mkForce false;
+        }
+      ];
+      nonIsoModules = [
+        #inputs.nixpkgs.nixosModules.readOnlyPkgs
+        #{ nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
+      ];
+    in
+    withSystem sub.system (
+      _:
+      inputs.nixpkgs.lib.nixosSystem {
+        inherit (sub) system;
+        specialArgs = withSystem sub.system (
+          { inputs', self', ... }:
+          {
+            inherit self' inputs' inputs;
+          }
+        );
+        modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
+      }
+    );
+in
+{
+  imports = [
+    flake.treefmt-nix.flakeModule
+  ];
+  options.genesis = {
+    compootuers = lib.mkOption {
+      type = lib.types.listOf (
+        lib.types.submodule {
+          options = {
+            hostname = lib.mkOption {
+              type = lib.types.nullOr lib.types.str;
+              default = null;
+            };
+            src = lib.mkOption {
+              type = lib.types.path;
+            };
+            system = lib.mkOption {
+              type = lib.types.str;
+              default = "x86_64-linux";
+            };
+          };
+        }
+      );
+    };
+  };
+  config.flake.nixosConfigurations = builtins.listToAttrs (
+    lib.concatMap (
+      sub:
+      if sub.hostname == null then
+        [ ]
+      else
+        [
+          {
+            name = sub.hostname;
+            value = configForSub {
+              inherit sub;
+              iso = false;
+            };
+          }
+          {
+            name = "${sub.hostname}-iso";
+            value = configForSub {
+              inherit sub;
+              iso = true;
+            };
+          }
+        ]
+    ) config.genesis.compootuers
+  );
+}
+_:
+{
+  warn-dirty = false;
+  keep-derivations = true;
+  keep-outputs = true;
+  accept-flake-config = false;
+  allow-import-from-derivation = false;
+  builders-use-substitutes = true;
+  use-xdg-base-directories = true;
+  use-cgroups = true;
+  log-lines = 30;
+  keep-going = true;
+  connect-timeout = 5;
+  sandbox = true;
+  download-buffer-size = 134217728;
+  extra-experimental-features = [
+    "nix-command"
+    "flakes"
+    "cgroups"
+    "auto-allocate-uids"
+    "fetch-closure"
+    "dynamic-derivations"
+    "pipe-operators"
+  ];
+}
+{
+  description = "this is something:(";
+  inputs = {
+    nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
+    nixpkgs.url = "github:nixos/nixpkgs";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    wrapper-manager = {
+      url = "github:viperML/wrapper-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+    };
+  };
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [
+        inputs.treefmt-nix.flakeModule
+      ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+      perSystem.treefmt = {
+        projectRootFile = "flake.nix";
+        programs = {
+          nixfmt.enable = true;
+          deadnix.enable = true;
+          statix.enable = true;
+          dos2unix.enable = true;
+        };
+      };
+      flake.nixosModules =
+        let
+          defaultModules = {
+            nix-conf = ./modules/nixos/nix-conf.nix;
+            sane = ./modules/nixos/sane.nix;
+            impermanence = ./modules/nixos/impermanence.nix;
+            home-manager = ./modules/nixos/home-manager.nix;
+          };
+        in
+        defaultModules
+        // {
+          default.imports = builtins.attrValues defaultModules;
+          genesis =
+            {
+              lib,
+              withSystem,
+              ...
+            }:
+            lib.modules.importApply ./modules/nixos/genesis.nix {
+              flake = inputs;
+              inherit withSystem;
+            };
+          fakeFileSystems =
+            { lib, ... }:
+            lib.modules.importApply ./modules/nixos/fakeFileSystems {
+              flake = inputs;
+            };
+        };
+    };
+}

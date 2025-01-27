@@ -16,7 +16,7 @@ let
       baseModules = [
         { networking.hostName = sub.hostname; }
         sub.src
-        flake.self.nixosModules.default
+        #flake.self.nixosModules.default
         flake.nixos-facter-modules.nixosModules.facter
         flake.self.nixosModules.fakeFileSystems
       ];
@@ -29,7 +29,7 @@ let
         }
       ];
       nonIsoModules = [
-        #inputs.nixpkgs.nixosModules.readOnlyPkgs
+        inputs.nixpkgs.nixosModules.readOnlyPkgs
         #{ nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
       ];
     in
