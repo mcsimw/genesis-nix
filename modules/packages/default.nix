@@ -1,5 +1,5 @@
-{ lib, flake, ... }:
-{ config, inputs, ... }:
+{ flake, ... }:
+{ config, inputs, lib, ... }:
 
 {
   perSystem =
