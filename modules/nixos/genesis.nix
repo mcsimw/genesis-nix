@@ -14,7 +14,10 @@ let
     }:
     let
       baseModules = [
-        { networking.hostName = sub.hostname; }
+        { 
+          networking.hostName = sub.hostname; 
+          nixpkgs.pkgs = withSystem system ({pkgs, ...}: pkgs);
+        }
         sub.src
         flake.self.nixosModules.default
         flake.nixos-facter-modules.nixosModules.facter
