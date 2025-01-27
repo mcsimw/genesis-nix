@@ -16,9 +16,8 @@ let
       baseModules = [
         { networking.hostName = sub.hostname; }
         sub.src
-        #flake.self.nixosModules.default
-        flake.nixos-facter-modules.nixosModules.facter
-        #flake.self.nixosModules.fakeFileSystems
+        flake.self.nixosModules.default
+        flake.self.nixosModules.fakeFileSystems
       ];
       isoModules = [
         {
