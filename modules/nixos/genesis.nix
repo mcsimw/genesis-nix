@@ -17,8 +17,8 @@ let
       baseModules = [
         { networking.hostName = sub.hostname; }
         sub.src
-          flake.self.nixosModules.default
-          flake.self.nixosModules.fakeFileSystems
+        #  flake.self.nixosModules.default
+        #  flake.self.nixosModules.fakeFileSystems
       ];
       isoModules = [
         {
@@ -36,7 +36,7 @@ let
     withSystem sub.system (
       _:
       inputs.nixpkgs.lib.nixosSystem {
-    #    inherit (sub) system;
+        inherit (sub) system;
         specialArgs = withSystem sub.system (
           { inputs', self', ... }:
           {
