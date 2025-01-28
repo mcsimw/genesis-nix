@@ -19,6 +19,8 @@ let
         sub.src
         #  flake.self.nixosModules.default
         #  flake.self.nixosModules.fakeFileSystems
+        inputs.nixpkgs.nixosModules.readOnlyPkgs
+        { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
       ];
       isoModules = [
         {
@@ -29,8 +31,6 @@ let
         }
       ];
       nonIsoModules = [
-        inputs.nixpkgs.nixosModules.readOnlyPkgs
-        { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
       ];
     in
     withSystem sub.system (
