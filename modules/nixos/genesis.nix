@@ -6,7 +6,7 @@
   ...
 }:
 let
-  modulesPath = "${flake.nixpkgs.outPath}/nixos/modules";
+ # modulesPath = "${flake.nixpkgs.outPath}/nixos/modules";
   configForSub =
     {
       sub,
@@ -21,10 +21,10 @@ let
       ];
       isoModules = [
         {
-          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
-          boot.initrd.systemd.enable = lib.mkForce false;
-          isoImage.squashfsCompression = "lz4";
-          networking.wireless.enable = lib.mkForce false;
+      #    imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+      #    boot.initrd.systemd.enable = lib.mkForce false;
+      #    isoImage.squashfsCompression = "lz4";
+      #    networking.wireless.enable = lib.mkForce false;
         }
       ];
       nonIsoModules = [
