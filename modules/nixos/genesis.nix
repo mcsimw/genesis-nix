@@ -7,7 +7,7 @@
 }:
 let
 
-#  modulesPath = "${flake.nixpkgs.outPath}/nixos/modules";
+  modulesPath = "${flake.nixpkgs.outPath}/nixos/modules";
   configForSub =
     {
       sub,
@@ -17,15 +17,15 @@ let
       baseModules = [
         { networking.hostName = sub.hostname; }
         sub.src
-        #  flake.self.nixosModules.default
-        #  flake.self.nixosModules.fakeFileSystems
+          flake.self.nixosModules.default
+          flake.self.nixosModules.fakeFileSystems
       ];
       isoModules = [
         {
-          #imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
-          #boot.initrd.systemd.enable = lib.mkForce false;
-          #isoImage.squashfsCompression = "lz4";
-          #networking.wireless.enable = lib.mkForce false;
+          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+          boot.initrd.systemd.enable = lib.mkForce false;
+          isoImage.squashfsCompression = "lz4";
+          networking.wireless.enable = lib.mkForce false;
         }
       ];
       nonIsoModules = [
@@ -35,7 +35,6 @@ let
     withSystem sub.system (
       _:
       inputs.nixpkgs.lib.nixosSystem {
-        inherit (sub) system;
         specialArgs = withSystem sub.system (
           { inputs', self', ... }:
           {
@@ -89,7 +88,7 @@ in
             name = "${sub.hostname}-iso";
             value = configForSub {
               inherit sub;
-              iso = false;
+              iso = true;
             };
           }
         ]
