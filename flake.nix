@@ -52,12 +52,12 @@
           default.imports = builtins.attrValues defaultModules;
           genesis =
             {
-              lib,
               withSystem,
+              self,
               ...
             }:
-            lib.modules.importApply ./modules/nixos/genesis.nix {
-              flake = inputs;
+            inputs.flake-parts-lib.importApply ./modules/nixos/genesis.nix {
+              localFlake = self;
               inherit withSystem;
             };
           fakeFileSystems =

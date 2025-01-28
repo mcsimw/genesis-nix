@@ -1,4 +1,4 @@
-{ flake, withSystem, ... }:
+{ localFlake, withSystem, ... }:
 {
   config,
   lib,
@@ -7,7 +7,7 @@
 }:
 let
 
-  modulesPath = "${flake.nixpkgs.outPath}/nixos/modules";
+  modulesPath = "${localFlake.nixpkgs.outPath}/nixos/modules";
   configForSub =
     {
       sub,
@@ -17,8 +17,8 @@ let
       baseModules = [
         { networking.hostName = sub.hostname; }
         sub.src
-        flake.self.nixosModules.default
-        flake.self.nixosModules.fakeFileSystems
+        localFlake.self.nixosModules.default
+        localFlake.self.nixosModules.fakeFileSystems
       ];
       isoModules = [
         {
@@ -59,7 +59,7 @@ let
 in
 {
   imports = [
-    flake.treefmt-nix.flakeModule
+    localFlake.treefmt-nix.flakeModule
   ];
   options.genesis = {
     compootuers = lib.mkOption {
