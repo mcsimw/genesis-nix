@@ -20,7 +20,6 @@ let
         #  flake.self.nixosModules.default
         #  flake.self.nixosModules.fakeFileSystems
         inputs.nixpkgs.nixosModules.readOnlyPkgs
-        { nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs); }
       ];
       isoModules = [
         {
