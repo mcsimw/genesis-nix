@@ -54,9 +54,10 @@
             {
               withSystem,
               self,
+              flake-parts-lib,
               ...
             }:
-            inputs.flake-parts-lib.importApply ./modules/nixos/genesis.nix {
+            flake-parts-lib.importApply ./modules/nixos/genesis.nix {
               localFlake = self;
               inherit withSystem;
             };
