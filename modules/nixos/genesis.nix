@@ -48,7 +48,7 @@ let
 in
 {
   imports = [
-    #flake.treefmt-nix.flakeModule
+    flake.treefmt-nix.flakeModule
   ];
   options.genesis = {
     compootuers = lib.mkOption {
