@@ -39,7 +39,6 @@ let
           {
             inputs',
             self',
-            withSystem,
             ...
           }:
           {
@@ -47,7 +46,6 @@ let
               self'
               inputs'
               inputs
-              withSystem
               ;
           }
         );
