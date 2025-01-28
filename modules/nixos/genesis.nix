@@ -29,13 +29,13 @@ let
         }
       ];
       nonIsoModules = [
-        flake.nixpkgs.nixosModules.readOnlyPkgs
-       # { nixpkgs.pkgs = withSystem "x86_64-linux" ({ pkgs, ... }: pkgs); }
+        inputs.nixpkgs.nixosModules.readOnlyPkgs
+        { nixpkgs.pkgs = withSystem "x86_64-linux" ({ pkgs, ... }: pkgs); }
       ];
     in
     withSystem sub.system (
       _:
-      flake.nixpkgs.lib.nixosSystem {
+      inputs.nixpkgs.lib.nixosSystem {
     #    inherit (sub) system;
         specialArgs = withSystem sub.system (
           { inputs', self', ... }:
