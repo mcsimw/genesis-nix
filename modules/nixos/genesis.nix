@@ -26,7 +26,7 @@ let
           boot.initrd.systemd.enable = lib.mkForce false;
           isoImage.squashfsCompression = "lz4";
           networking.wireless.enable = lib.mkForce false;
-          nixpkgs.hostPlatform  = { inherit system };
+          nixpkgs.hostPlatform = { inherit system; };
         }
       ];
       nonIsoModules = [
