@@ -36,9 +36,19 @@ let
       _:
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = withSystem sub.system (
-          { inputs', self', ... }:
           {
-            inherit self' inputs' inputs;
+            inputs',
+            self',
+            withSystem,
+            ...
+          }:
+          {
+            inherit
+              self'
+              inputs'
+              inputs
+              withSystem
+              ;
           }
         );
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
