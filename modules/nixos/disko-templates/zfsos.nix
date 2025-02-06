@@ -16,16 +16,16 @@ in
         inherit device;
         content = {
           type = "gpt";
+          nodev."/" = {
+            fsType = "tmpfs";
+            mountOptions = [
+              "size=2G"
+              "defaults"
+              "mode=755"
+            ];
+          };
           partitions = {
             inherit esp;
-            nodev."/" = {
-              fsType = "tmpfs";
-              mountOptions = [
-                "size=2G"
-                "defaults"
-                "mode=755"
-              ];
-            };
             encryptedSwap = {
               size = "${swapSize}";
               content = {
