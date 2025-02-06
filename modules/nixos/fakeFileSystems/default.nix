@@ -1,9 +1,8 @@
 { flake, ... }:
-{ lib, config, ... }:
+{ lib, ... }:
 {
   imports = [
     flake.disko.nixosModules.disko
-    (import ./zfsos.nix { inherit config flake lib; })
     ./bcachefsos.nix
   ];
   options.fakeFileSystems.nix = {
@@ -11,7 +10,6 @@
     template = lib.mkOption {
       type = lib.types.nullOr (
         lib.types.enum [
-          "zfsos"
           "bcachefsos"
         ]
       );
@@ -24,10 +22,6 @@
     diskName = lib.mkOption {
       type = lib.types.strMatching "^[a-zA-Z0-9_-]+$";
       description = "The name of the disk.";
-    };
-    ashift = lib.mkOption {
-      type = lib.types.nullOr (lib.types.ints.between 9 16);
-      description = "Ashift value for ZFS (9-16).";
     };
     swapSize = lib.mkOption {
       type = lib.types.strMatching "^[0-9]+[MG]$";

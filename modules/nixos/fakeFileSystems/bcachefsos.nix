@@ -4,6 +4,6 @@ let
 in
 {
   config = lib.mkIf (cfg.template == "bcachefsos") (
-    import ../disko-templates/bcachefsos.nix { inherit (cfg) device diskName; }
+    import ./templates/bcachefsos.nix { inherit (cfg) device diskName; }
   );
 }

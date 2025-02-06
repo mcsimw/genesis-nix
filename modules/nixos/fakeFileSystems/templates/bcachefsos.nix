@@ -1,4 +1,7 @@
-{ diskName, device, ... }:
+{ diskName, device, swapSize, ... }:
+let
+  esp = import ./esp.nix { inherit diskName; };
+in
 {
   disko.devices = {
     disk = {
@@ -8,20 +11,7 @@
         content = {
           type = "gpt";
           partitions = {
-            "esp" = {
-              type = "EF00";
-              size = "1G";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot";
-                mountOptions = [
-                  "dmask=0022"
-                  "fmask=0022"
-                  "umask=0077"
-                ];
-              };
-            };
+            inherit esp;
             "nix" = {
               size = "100%";
               content = {
