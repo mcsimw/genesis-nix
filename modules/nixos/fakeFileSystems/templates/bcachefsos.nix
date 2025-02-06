@@ -1,6 +1,6 @@
-{ diskName, device, ... }:
+{ diskName, device, swapSize, ... }:
 let
-  esp = import ./esp.nix { inherit diskName swapSize; };
+  esp = import ./esp.nix { inherit diskName; };
 in
 {
   disko.devices = {
