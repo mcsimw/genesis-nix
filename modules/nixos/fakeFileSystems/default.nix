@@ -18,20 +18,21 @@
       default = null;
     };
     device = lib.mkOption {
-      type = lib.types.str;
-      description = "The device to use for the disk";
+      type = lib.types.path;
+      description = "The block device to use for the filesystem.";
     };
     diskName = lib.mkOption {
-      type = lib.types.str;
-      description = "name of disk";
+      type = lib.types.strMatching "^[a-zA-Z0-9_-]+$";
+      description = "The name of the disk.";
     };
     ashift = lib.mkOption {
-      type = lib.types.str;
-      description = "ashift of disk";
+      type = lib.types.nullOr (lib.types.ints.between 9 16);
+      default = null;
+      description = "Ashift value for ZFS (9-16).";
     };
     swapSize = lib.mkOption {
-      type = lib.types.str;
-      description = "size of swap partition";
+      type = lib.types.strMatching "^[0-9]+[MG]$";
+      description = "Size of the swap partition (e.g., '8G' or '1024M').";
     };
   };
 }
