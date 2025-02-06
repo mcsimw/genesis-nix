@@ -1,9 +1,17 @@
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  flake,
+  ...
+}:
 let
   cfg = config.fakeFileSystems.nix;
 in
 {
-  imports = [ ./zfs-rollback.nix ];
+  imports = [
+    ./zfs-rollback.nix
+    flake.self.nixosModules.impermanence
+  ];
   config = lib.mkIf (cfg.enable && cfg.template == "zfsos") (
     {
       boot.kernelParams = [ "nohibernate" ];

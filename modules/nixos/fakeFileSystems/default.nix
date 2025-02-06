@@ -27,7 +27,6 @@
     };
     ashift = lib.mkOption {
       type = lib.types.nullOr (lib.types.ints.between 9 16);
-      default = null;
       description = "Ashift value for ZFS (9-16).";
     };
     swapSize = lib.mkOption {

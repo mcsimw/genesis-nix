@@ -43,7 +43,8 @@ let
       ];
       nonIsoModules = [
         #        inputs.nixpkgs.nixosModules.readOnlyPkgs
-        flake.self.nixosModules.impermanence
+        #
+        sub.filesystemSrc
       ];
     in
     withSystem sub.system (
@@ -70,6 +71,10 @@ in
               default = null;
             };
             src = lib.mkOption {
+              type = lib.types.path;
+              default = null;
+            };
+            filesystemSrc = lib.mkOption {
               type = lib.types.path;
               default = null;
             };
