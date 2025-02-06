@@ -1,9 +1,9 @@
 { flake, ... }:
-{ lib, ... }:
+{ lib, config, ... }:
 {
   imports = [
     flake.disko.nixosModules.disko
-    ./zfsos.nix
+    (import ./zfsos.nix { inherit config flake lib; })
     ./bcachefsos.nix
   ];
   options.fakeFileSystems.nix = {

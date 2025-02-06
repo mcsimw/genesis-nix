@@ -1,7 +1,7 @@
-{ flake, ... }:
 {
   lib,
   config,
+  flake,
   ...
 }:
 let
