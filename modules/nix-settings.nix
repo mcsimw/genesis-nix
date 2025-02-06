@@ -1,4 +1,5 @@
-_: {
+{ pkgs, ... }:
+{
   warn-dirty = false;
   keep-derivations = true;
   keep-outputs = true;
@@ -10,7 +11,7 @@ _: {
   log-lines = 30;
   keep-going = true;
   connect-timeout = 5;
-  sandbox = true;
+  sandbox = pkgs.stdenv.hostPlatform.isLinux;
   download-buffer-size = 134217728;
   extra-experimental-features = [
     "nix-command"

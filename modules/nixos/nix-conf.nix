@@ -22,7 +22,7 @@
   config = {
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     system = {
-      #      tools.nixos-option.enable = false;
+      tools.nixos-option.enable = false;
       rebuild.enableNg = true;
     };
     nix = {

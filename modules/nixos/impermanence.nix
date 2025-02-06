@@ -1,11 +1,13 @@
+{ flake, ... }:
 {
-  lib,
   config,
-  options,
   ...
 }:
 {
-  config = lib.optionalAttrs (options.environment ? persistence) {
+  imports = [
+    flake.impermanence.nixosModules.impermanence
+  ];
+  config = {
     environment.persistence."/persist" = {
       enable = true;
       hideMounts = true;
