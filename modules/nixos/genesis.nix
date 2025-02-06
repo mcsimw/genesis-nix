@@ -34,7 +34,6 @@ let
         flake.nixos-facter-modules.nixosModules.facter
       ];
       isoModules = [
-        sub.isoSrc
         {
           imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
           boot.initrd.systemd.enable = lib.mkForce false;
@@ -44,7 +43,6 @@ let
       ];
       nonIsoModules = [
         #        inputs.nixpkgs.nixosModules.readOnlyPkgs
-        sub.nonIsoSrc
       ];
     in
     withSystem sub.system (
@@ -72,14 +70,6 @@ in
             };
             src = lib.mkOption {
               type = lib.types.path;
-              default = null;
-            };
-            isoSrc = lib.mkOption {
-              type = lib.types.nullOr lib.types.path;
-              default = null;
-            };
-            nonIsoSrc = lib.mkOption {
-              type = lib.types.nullOr lib.types.path;
               default = null;
             };
             system = lib.mkOption {
