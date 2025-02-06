@@ -75,11 +75,11 @@ in
               default = null;
             };
             isoSrc = lib.mkOption {
-              type = lib.types.path;
+              type = lib.types.nullOr lib.types.path;
               default = null;
             };
             nonIsoSrc = lib.mkOption {
-              type = lib.types.path;
+              type = lib.types.nullOr lib.types.path;
               default = null;
             };
             system = lib.mkOption {
