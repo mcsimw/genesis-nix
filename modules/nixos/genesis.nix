@@ -39,11 +39,11 @@ let
           boot.initrd.systemd.enable = lib.mkForce false;
           isoImage.squashfsCompression = "lz4";
           networking.wireless.enable = lib.mkForce false;
+          sub.isoSrc
         }
       ];
       nonIsoModules = [
         #        inputs.nixpkgs.nixosModules.readOnlyPkgs
-        sub.nonIsoSrc
       ];
     in
     withSystem sub.system (
@@ -73,7 +73,7 @@ in
               type = lib.types.path;
               default = null;
             };
-            nonIsoSrc = lib.mkOption {
+            isoSrc = lib.mkOption {
               type = lib.types.path;
               default = null;
             };
