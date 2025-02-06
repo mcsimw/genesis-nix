@@ -56,6 +56,6 @@
   };
   boot = {
     initrd.systemd.enable = lib.mkDefault true;
-    zfs.forceImportRoot = lib.mkForce false;
+#    zfs.forceImportRoot = lib.mkForce false;
   };
 }
