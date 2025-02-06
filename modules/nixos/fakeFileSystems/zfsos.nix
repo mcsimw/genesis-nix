@@ -10,7 +10,7 @@ in
 {
   imports = [
     ./zfs-rollback.nix
-    flake.self.nixosModules.impermanence
+    flake.impermanence.nixosModules.impermanence
   ];
   config = lib.mkIf (cfg.enable && cfg.template == "zfsos") (
     {
@@ -24,6 +24,15 @@ in
         enable = true;
         snapshot = "blank";
         volume = "${cfg.diskName}-zfsos/faketmpfs";
+      };
+      environment.persistence."/persist" = {
+        enable = true;
+        hideMounts = true;
+        directories = [
+          "/var/lib/nixos"
+          "/var/log"
+          "/var/lib/systemd/coredump"
+        ];
       };
     }
     // (import ../disko-templates/zfsos.nix {
