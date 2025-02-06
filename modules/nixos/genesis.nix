@@ -34,12 +34,12 @@ let
         flake.nixos-facter-modules.nixosModules.facter
       ];
       isoModules = [
+        sub.isoSrc
         {
           imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
           boot.initrd.systemd.enable = lib.mkForce false;
           isoImage.squashfsCompression = "lz4";
           networking.wireless.enable = lib.mkForce false;
-          sub.isoSrc
         }
       ];
       nonIsoModules = [
