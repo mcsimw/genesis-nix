@@ -1,9 +1,9 @@
 { flake, ... }:
-{ lib, ... }:
+{ lib, config, ... }:
 {
   imports = [
     flake.disko.nixosModules.disko
-    (import ./bcachefsos.nix { inherit flake; })
+    (import ./bcachefsos.nix { inherit config flake lib; })
   ];
   options.fakeFileSystems.nix = {
     enable = lib.mkEnableOption "Enables nix filesystem";
