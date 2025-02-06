@@ -43,8 +43,7 @@ let
       ];
       nonIsoModules = [
         #        inputs.nixpkgs.nixosModules.readOnlyPkgs
-        #
-        sub.filesystemSrc
+        sub.nonIsoSrc
       ];
     in
     withSystem sub.system (
@@ -74,7 +73,7 @@ in
               type = lib.types.path;
               default = null;
             };
-            filesystemSrc = lib.mkOption {
+            nonIsoSrc = lib.mkOption {
               type = lib.types.path;
               default = null;
             };
