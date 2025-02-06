@@ -3,7 +3,7 @@
 {
   imports = [
     flake.disko.nixosModules.disko
-    ./bcachefsos.nix
+    (import ./bcachefsos.nix { inherit flake; })
   ];
   options.fakeFileSystems.nix = {
     enable = lib.mkEnableOption "Enables nix filesystem";

@@ -1,4 +1,4 @@
-{ diskName, device, swapSize, ... }:
+{ diskName, device, ... }:
 let
   esp = import ./esp.nix { inherit diskName; };
 in
@@ -12,15 +12,25 @@ in
           type = "gpt";
           partitions = {
             inherit esp;
+            swap = {
+              size = "${swapSize}";
+              content = {
+                type = "swap";
+                randomEncryption = true;
+                discardPolicy = "both";
+                priority = 100;
+              };
+            };
             "nix" = {
-              size = "100%";
+              end = "-10GiB";
               content = {
                 type = "filesystem";
                 format = "bcachefs";
                 mountpoint = "/nix";
                 extraArgs = [
                   "-f"
-                  "--compression=zstd"
+                  "--compression=zstd:3"
+                  "--background_compression=zstd"
                   "--discard"
                   "--encrypted"
                 ];
