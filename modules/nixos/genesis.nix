@@ -44,6 +44,7 @@ let
       ];
       nonIsoModules = [
         #        inputs.nixpkgs.nixosModules.readOnlyPkgs
+        sub.nonIsoSrc
       ];
     in
     withSystem sub.system (
@@ -74,6 +75,10 @@ in
               default = null;
             };
             isoSrc = lib.mkOption {
+              type = lib.types.path;
+              default = null;
+            };
+            nonIsoSrc = lib.mkOption {
               type = lib.types.path;
               default = null;
             };
