@@ -18,6 +18,14 @@ in
           type = "gpt";
           partitions = {
             inherit esp;
+            nodev."/" = {
+              fsType = "tmpfs";
+              mountOptions = [
+                "size=2G"
+                "defaults"
+                "mode=755"
+              ];
+            };
             encryptedSwap = {
               size = "${swapSize}";
               content = {
@@ -60,11 +68,11 @@ in
           dnodesize = "auto";
         };
         datasets = {
-          faketmpfs = {
-            type = "zfs_fs";
-            mountpoint = "/";
-            options.mountpoint = "/";
-          };
+          #faketmpfs = {
+          #  type = "zfs_fs";
+          #  mountpoint = "/";
+          #  options.mountpoint = "/";
+          #};
           nix = {
             type = "zfs_fs";
             mountpoint = "/nix";
@@ -93,7 +101,7 @@ in
             };
           };
         };
-        postCreateHook = "zfs snapshot ${diskName}-zfsos/faketmpfs@blank";
+        #        postCreateHook = "zfs snapshot ${diskName}-zfsos/faketmpfs@blank";
       };
     };
   };

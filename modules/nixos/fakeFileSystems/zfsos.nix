@@ -9,7 +9,7 @@ let
 in
 {
   imports = [
-    ./zfs-rollback.nix
+    # ./zfs-rollback.nix
     flake.impermanence.nixosModules.impermanence
   ];
   config = lib.mkIf (cfg.enable && cfg.template == "zfsos") (
@@ -20,11 +20,11 @@ in
         "/persist".neededForBoot = true;
         "/mnt/${cfg.diskName}".neededForBoot = true;
       };
-      zfs-rollback = {
-        enable = true;
-        snapshot = "blank";
-        volume = "${cfg.diskName}-zfsos/faketmpfs";
-      };
+      # zfs-rollback = {
+      #   enable = true;
+      #   snapshot = "blank";
+      #   volume = "${cfg.diskName}-zfsos/faketmpfs";
+      # };
       environment.persistence."/persist" = {
         enable = true;
         hideMounts = true;
