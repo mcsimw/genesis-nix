@@ -26,9 +26,28 @@ in
                 priority = 100;
               };
             };
-            "nix" = {
-              end = "-10GiB";
+            "persist" = {
               content = {
+                size = "500G";
+                type = "filesystem";
+                format = "bcachefs";
+                mountpoint = "/persist";
+                extraArgs = [
+                  "-f"
+                  "--compression=zstd:3"
+                  "--background_compression=zstd"
+                  "--discard"
+                  "--encrypted"
+                ];
+                mountOptions = [
+                  "defaults"
+                  "noatime"
+                ];
+              };
+            };
+            "nix" = {
+              content = {
+                end = "-10G";
                 type = "filesystem";
                 format = "bcachefs";
                 mountpoint = "/nix";
