@@ -91,7 +91,7 @@ in
           inherit system;
           config.allowUnfree = true;
           overlays = with flake; [
-#            nix.overlays.default
+            #            nix.overlays.default
             emacs-overlay.overlays.default
             chaotic.overlays.default
           ];
