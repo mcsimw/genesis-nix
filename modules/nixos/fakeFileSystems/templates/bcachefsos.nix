@@ -2,6 +2,7 @@
   diskName,
   device,
   swapSize,
+  nixSize,
   ...
 }:
 let
