@@ -28,8 +28,8 @@ in
               };
             };
             "persist" = {
+              size = "${nixSize}";
               content = {
-                size = "${nixSize}";
                 type = "filesystem";
                 format = "bcachefs";
                 mountpoint = "/persist";
