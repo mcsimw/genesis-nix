@@ -17,15 +17,7 @@ let
       baseModules = [
         {
           networking.hostName = sub.hostname;
-          #          nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs);
-          nixpkgs = {
-            config.allowUnfree = true;
-            hostPlatform = sub.system;
-            overlays = with flake; [
-              nix.overlays.default
-              emacs-overlay.overlays.default
-            ];
-          };
+          nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs);
         }
         sub.src
         flake.self.nixosModules.sane
@@ -42,7 +34,7 @@ let
         }
       ];
       nonIsoModules = [
-        #        inputs.nixpkgs.nixosModules.readOnlyPkgs
+        inputs.nixpkgs.nixosModules.readOnlyPkgs
       ];
     in
     withSystem sub.system (
@@ -83,6 +75,22 @@ in
     };
   };
   config = {
+    perSystem =
+      {
+        pkgs,
+        system,
+        ...
+      }:
+      {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = with flake; [
+            nix.overlays.default
+            emacs-overlay.overlays.default
+          ];
+        };
+      };
     flake.nixosConfigurations = builtins.listToAttrs (
       lib.concatMap (
         sub:
