@@ -38,7 +38,6 @@ in
                   "--compression=zstd:3"
                   "--background_compression=zstd"
                   "--discard"
-                  "--encrypted"
                 ];
                 mountOptions = [
                   "defaults"
@@ -47,7 +46,7 @@ in
               };
             };
             "nix" = {
-              end = "-10G";
+             size = "100%";
               content = {
                 type = "filesystem";
                 format = "bcachefs";
@@ -57,7 +56,6 @@ in
                   "--compression=zstd:3"
                   "--background_compression=zstd"
                   "--discard"
-                  "--encrypted"
                 ];
                 mountOptions = [
                   "defaults"
@@ -80,3 +78,4 @@ in
     };
   };
 }
+
