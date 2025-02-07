@@ -34,7 +34,7 @@ let
       ] ++ lib.optionals (sub.isoSrc != null) [ sub.isoSrc ];
       nonIsoModules = [
         inputs.nixpkgs.nixosModules.readOnlyPkgs
-      ] ++ lib.optionals (sub.nonIsoSrc != null) [ sub.nonIsoSrc ];
+      ] ++ lib.optionals (sub.filesystem != null) [ sub.filesystem ];
     in
     withSystem sub.system (
       _:
@@ -67,7 +67,7 @@ in
               type = lib.types.nullOr lib.types.path;
               default = null;
             };
-            nonIsoSrc = lib.mkOption {
+            flilesystem = lib.mkOption {
               type = lib.types.nullOr lib.types.path;
               default = null;
             };
