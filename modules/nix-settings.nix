@@ -13,6 +13,7 @@
   connect-timeout = 5;
   sandbox = pkgs.stdenv.hostPlatform.isLinux;
   download-buffer-size = 134217728;
+  extraOptions = "experimental-features = nix-command flakes cgroups auto-allocate-uids fetch-closure dynamic-derivations pipe-operators";
   extra-experimental-features = [
     "nix-command"
     "flakes"

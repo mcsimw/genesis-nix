@@ -23,7 +23,7 @@ let
         flake.self.nixosModules.sane
         flake.self.nixosModules.nix-conf
         flake.self.nixosModules.fakeFileSystems
-      ];
+      ] ++ lib.optionals (sub.base != null ) [ sub.base ];
       isoModules = [
         {
           imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
@@ -31,10 +31,10 @@ let
           isoImage.squashfsCompression = "lz4";
           networking.wireless.enable = lib.mkForce false;
         }
-      ] ++ lib.optionals (sub.isoSrc != null) [ sub.isoSrc ];
+      ] ++ lib.optionals (sub.iso != null) [ sub.iso ];
       nonIsoModules = [
         inputs.nixpkgs.nixosModules.readOnlyPkgs
-      ] ++ lib.optionals (sub.filesystem != null) [ sub.filesystem ];
+      ] ++ lib.optionals (sub.nonIso != null) [ sub.nonIso ];
     in
     withSystem sub.system (
       _:
@@ -59,15 +59,15 @@ in
               type = lib.types.nullOr lib.types.str;
               default = null;
             };
-            src = lib.mkOption {
+            base = lib.mkOption {
               type = lib.types.path;
               default = null;
             };
-            isoSrc = lib.mkOption {
+            iso = lib.mkOption {
               type = lib.types.nullOr lib.types.path;
               default = null;
             };
-            filesystem = lib.mkOption {
+            nonIso = lib.mkOption {
               type = lib.types.nullOr lib.types.path;
               default = null;
             };
