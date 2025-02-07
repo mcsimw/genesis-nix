@@ -50,36 +50,34 @@ let
     );
 in
 {
-  options.genesis = {
-    compootuers = lib.mkOption {
-      type = lib.types.listOf (
-        lib.types.submodule {
-          options = {
-            hostname = lib.mkOption {
-              type = lib.types.nullOr lib.types.str;
-              default = null;
-            };
-            base = lib.mkOption {
-              type = lib.types.path;
-              default = null;
-            };
-            iso = lib.mkOption {
-              type = lib.types.nullOr lib.types.path;
-              default = null;
-            };
-            nonIso = lib.mkOption {
-              type = lib.types.nullOr lib.types.path;
-              default = null;
-            };
-            system = lib.mkOption {
-              type = lib.types.str;
-              default = null;
-            };
+  options.compootuers = lib.mkOption {
+    type = lib.types.listOf (
+      lib.types.submodule {
+        options = {
+          hostname = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
           };
-        }
-      );
-      default = [ ];
-    };
+          base = lib.mkOption {
+            type = lib.types.path;
+            default = null;
+          };
+          iso = lib.mkOption {
+            type = lib.types.nullOr lib.types.path;
+            default = null;
+          };
+          nonIso = lib.mkOption {
+            type = lib.types.nullOr lib.types.path;
+            default = null;
+          };
+          system = lib.mkOption {
+            type = lib.types.str;
+            default = null;
+          };
+        };
+      }
+    );
+    default = [ ];
   };
   config = {
     perSystem =
