@@ -67,7 +67,7 @@ in
               type = lib.types.nullOr lib.types.path;
               default = null;
             };
-            flilesystem = lib.mkOption {
+            filesystem = lib.mkOption {
               type = lib.types.nullOr lib.types.path;
               default = null;
             };
