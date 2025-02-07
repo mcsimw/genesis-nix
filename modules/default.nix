@@ -8,7 +8,7 @@ let
 in
 {
   flake.nixosModules = {
-    genesis = importApply ./nixos/genesis.nix {
+    compootuers = importApply ./nixos/compootuers.nix {
       flake = inputs;
     };
     sane = ./nixos/sane.nix;
