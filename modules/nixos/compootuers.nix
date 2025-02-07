@@ -21,7 +21,6 @@ let
         }
         flake.self.nixosModules.sane
         flake.self.nixosModules.nix-conf
-        flake.self.nixosModules.fakeFileSystems
         flake.chaotic.nixosModules.mesa-git
       ] ++ lib.optionals (sub.base != null) [ sub.base ];
       isoModules = [
