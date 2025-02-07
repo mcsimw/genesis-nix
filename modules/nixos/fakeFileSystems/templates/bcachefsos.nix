@@ -47,8 +47,8 @@ in
               };
             };
             "nix" = {
+              end = "-10G";
               content = {
-                end = "-10G";
                 type = "filesystem";
                 format = "bcachefs";
                 mountpoint = "/nix";
