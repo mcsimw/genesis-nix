@@ -31,10 +31,10 @@ let
           isoImage.squashfsCompression = "lz4";
           networking.wireless.enable = lib.mkForce false;
         }
-      ];
+      ] ++ lib.optionals (sub.isoSrc != null) [ sub.isoSrc ];
       nonIsoModules = [
         inputs.nixpkgs.nixosModules.readOnlyPkgs
-      ];
+      ] ++ lib.optionals (sub.nonIsoSrc != null) [ sub.nonIsoSrc ];
     in
     withSystem sub.system (
       _:
@@ -61,6 +61,14 @@ in
             };
             src = lib.mkOption {
               type = lib.types.path;
+              default = null;
+            };
+            isoSrc = lib.mkOption {
+              type = lib.types.nullOr lib.types.path;
+              default = null;
+            };
+            nonIsoSrc = lib.mkOption {
+              type = lib.types.nullOr lib.types.path;
               default = null;
             };
             system = lib.mkOption {
