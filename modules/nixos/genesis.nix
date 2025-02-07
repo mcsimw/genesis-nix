@@ -95,6 +95,7 @@ in
           overlays = with flake; [
             nix.overlays.default
             emacs-overlay.overlays.default
+            chaotic.overlays.default
           ];
         };
       };
