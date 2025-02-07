@@ -28,7 +28,7 @@ in
             };
             "persist" = {
               content = {
-                size = "500G";
+                size = "${nixSize}";
                 type = "filesystem";
                 format = "bcachefs";
                 mountpoint = "/persist";

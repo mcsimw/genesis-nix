@@ -27,5 +27,9 @@
       type = lib.types.strMatching "^[0-9]+[MG]$";
       description = "Size of the swap partition (e.g., '8G' or '1024M').";
     };
+    nixSize = lib.mkOption {
+      type = lib.types.strMatching "^[0-9]+[MG]$";
+      description = "Size of the nix partition (e.g., '8G' or '1024M').";
+    };
   };
 }
