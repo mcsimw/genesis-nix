@@ -119,7 +119,7 @@ in
               };
             }
           ]
-      ) config.genesis.compootuers
+      ) config.compootuers
     );
   };
   imports = [
