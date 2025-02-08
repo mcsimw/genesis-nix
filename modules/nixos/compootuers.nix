@@ -22,7 +22,7 @@ let
         flake.self.nixosModules.sane
         flake.self.nixosModules.nix-conf
         flake.chaotic.nixosModules.mesa-git
-        flake.lix-module.nixosModules.default
+        # flake.lix-module.nixosModules.default
       ] ++ lib.optionals (sub.both != null) [ sub.both ];
       isoModules = [
         {
