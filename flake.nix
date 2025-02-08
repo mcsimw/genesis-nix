@@ -15,6 +15,7 @@
     emacs-overlay.url = "github:nix-community/emacs-overlay";
     impermanence.url = "github:nix-community/impermanence";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    lix-module = { url = "git+https://git.lix.systems/lix-project/nixos-module.git"; inputs.nixpkgs.follows = "nixpkgs"; inputs.lix.follows = "lix"; };
   };
 
   outputs =
