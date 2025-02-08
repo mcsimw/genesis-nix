@@ -30,10 +30,10 @@ let
           isoImage.squashfsCompression = "lz4";
           networking.wireless.enable = lib.mkForce false;
           systemd.targets = {
-            sleep.enable = false;
-            suspend.enable = false;
-            hibernate.enable = false;
-            hybrid-sleep.enable = false;
+            sleep.enable = lib.mkForce false;
+            suspend.enable = lib.mkForce false;
+            hibernate.enable = lib.mkForce false;
+            hybrid-sleep.enable = lib.mkForce false;
          };
         }
       ] ++ lib.optionals (sub.iso != null) [ sub.iso ];
