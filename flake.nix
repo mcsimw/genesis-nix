@@ -14,10 +14,6 @@
     };
     emacs-overlay.url = "github:nix-community/emacs-overlay";
     impermanence.url = "github:nix-community/impermanence";
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
   };
 
