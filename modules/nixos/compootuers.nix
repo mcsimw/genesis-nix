@@ -37,9 +37,9 @@ let
           };
           users.users.nixos = {
             initialPassword = "iso";
-            /* 
-              For some reason the installation-cd-base.nix sets these two to "", causing a warning
-             and potentially stopping my initialPassword setting from working.
+            /*
+               For some reason the installation-cd-base.nix sets these two to "", causing a warning
+               and potentially stopping my initialPassword setting from working.
             */
             hashedPasswordFile = null;
             hashedPassword = null;
