@@ -23,7 +23,7 @@
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     system = {
       tools.nixos-option.enable = false;
-      rebuild.enableNg = true;
+      #rebuild.enableNg = true;
     };
     nix = {
       registry = lib.listToAttrs (
