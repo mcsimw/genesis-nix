@@ -38,7 +38,7 @@ let
           users.users.nixos = {
             initialPassword = "iso";
             hashedPasswordFile = null;
-            hashedPassword null;
+            hashedPassword = null;
           };
         }
       ] ++ lib.optionals (sub.iso != null) [ sub.iso ];
