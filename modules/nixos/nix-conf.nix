@@ -22,7 +22,7 @@
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     system.rebuild.enableNg = true;
     nix = {
-      package = pkgs.nixVersions.latest
+      package = pkgs.nixVersions.latest;
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
       );
