@@ -20,10 +20,7 @@
   };
   config = {
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
-    system = {
-      #tools.nixos-option.enable = false;
-      rebuild.enableNg = true;
-    };
+    system.rebuild.enableNg = true;
     nix = {
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
