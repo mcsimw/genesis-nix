@@ -47,6 +47,7 @@
         sandbox = true;
         http-connections = 128;
         max-substitution-job = 128;
+        download-buffer-size = 134217728;
         extra-experimental-features = [
           "nix-command"
           "flakes"
@@ -54,6 +55,7 @@
           "auto-allocate-uids"
           "fetch-closure"
           "dynamic-derivations"
+          "pipe-operators"
         ];
       };
     };
