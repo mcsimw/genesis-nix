@@ -22,7 +22,7 @@ let
         flake.self.nixosModules.sane
         flake.self.nixosModules.nix-conf
         flake.chaotic.nixosModules.mesa-git
-      ] ++ lib.optionals (sub.base != null) [ sub.both ];
+      ] ++ lib.optionals (sub.both != null) [ sub.both ];
       isoModules = [
         {
           imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
@@ -33,7 +33,7 @@ let
       ] ++ lib.optionals (sub.iso != null) [ sub.iso ];
       nonIsoModules = [
         inputs.nixpkgs.nixosModules.readOnlyPkgs
-      ] ++ lib.optionals (sub.nonIso != null) [ sub.src ];
+      ] ++ lib.optionals (sub.src != null) [ sub.src ];
     in
     withSystem sub.system (
       _:
