@@ -22,7 +22,7 @@
   config = {
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     system = {
-      tools.nixos-option.enable = false;
+      #tools.nixos-option.enable = false;
       rebuild.enableNg = true;
     };
     nix = {
@@ -48,7 +48,7 @@
         log-lines = 30;
         keep-going = true;
         connect-timeout = 5;
-        sandbox = pkgs.stdenv.hostPlatform.isLinux;
+        sandbox = true;
         download-buffer-size = 134217728;
         extra-experimental-features = [
           "nix-command"
