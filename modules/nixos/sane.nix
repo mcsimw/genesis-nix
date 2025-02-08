@@ -1,7 +1,7 @@
 { config, lib, ... }:
 {
- systemd.sysusers.enable = true;
- networking = {
+  systemd.sysusers.enable = true;
+  networking = {
     useDHCP = lib.mkDefault true;
     useNetworkd = lib.mkDefault true;
     hostId = lib.mkForce (

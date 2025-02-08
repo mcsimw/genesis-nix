@@ -1,7 +1,6 @@
 {
   lib,
   config,
-  pkgs,
   inputs ? throw "Pass inputs to specialArgs or extraSpecialArgs",
   ...
 }:

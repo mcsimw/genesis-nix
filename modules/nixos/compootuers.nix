@@ -34,8 +34,8 @@ let
             suspend.enable = lib.mkForce false;
             hibernate.enable = lib.mkForce false;
             hybrid-sleep.enable = lib.mkForce false;
-         };
-         users.users.nixos.initialPassword = "iso";
+          };
+          users.users.nixos.initialPassword = "iso";
         }
       ] ++ lib.optionals (sub.iso != null) [ sub.iso ];
       nonIsoModules = [
