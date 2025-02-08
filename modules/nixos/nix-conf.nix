@@ -48,7 +48,7 @@
         connect-timeout = 5;
         sandbox = true;
         http-connections = 128;
-        max-substitution-job = 128;
+        max-substitution-jobs = 128;
         download-buffer-size = 134217728;
         extra-experimental-features = [
           "nix-command"
