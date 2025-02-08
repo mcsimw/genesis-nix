@@ -56,6 +56,24 @@
   };
   boot = {
     initrd.systemd.enable = lib.mkDefault true;
+    /*
+      The `zfs.forceImportRoot` option is set to false by default (using `lib.mkForce false`).
+      This default setting may cause NixOS to fail to boot if it cannot automatically import the
+      root ZFS pool. In such situations, you need to force the import by providing the kernel parameter
+      `zfs_force=1` (for example, by manually editing the kernel parameters in your bootloader).
+
+      This workaround is generally only required for the first boot after installation. Once the
+      system has successfully imported the pool and is running, the issue should not recur—provided
+      that critical factors (such as a consistent `hostId`) remain unchanged.
+
+      Keep in mind that this setting only offers a security benefit if you also prevent modifications to
+      kernel parameters at boot time. If such modifications are allowed, a user could simply add
+      `zfs_force=1`, negating the intended safeguard.
+
+      Furthermore, if you are using NixCastratum, the `hostId` is automatically derived from your hostname,
+      ensuring consistency between the installation ISO and the installed system, which in turn minimizes
+      the likelihood of encountering this boot issue.
+   */
     zfs.forceImportRoot = lib.mkForce false;
   };
 }
