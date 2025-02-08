@@ -48,7 +48,7 @@
         keep-going = true;
         connect-timeout = 5;
         sandbox = true;
-        download-buffer-size = 134217728;
+        # download-buffer-size = 134217728;
         extra-experimental-features = [
           "nix-command"
           "flakes"
@@ -56,7 +56,7 @@
           "auto-allocate-uids"
           "fetch-closure"
           "dynamic-derivations"
-          "pipe-operators"
+          # "pipe-operators"
         ];
       };
     };
