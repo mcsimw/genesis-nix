@@ -20,10 +20,7 @@
   };
   config = {
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
-    system = {
-      rebuild.enableNg = true;
-      tools.nixos-option.enable = false;
-    };
+    system.rebuild.enableNg = true;
     nix = {
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
@@ -48,7 +45,6 @@
         keep-going = true;
         connect-timeout = 5;
         sandbox = true;
-        download-buffer-size = 134217728;
         http-connections = 128;
         max-substitution-job = 128;
         extra-experimental-features = [
@@ -58,7 +54,6 @@
           "auto-allocate-uids"
           "fetch-closure"
           "dynamic-derivations"
-          "pipe-operators"
         ];
       };
     };
