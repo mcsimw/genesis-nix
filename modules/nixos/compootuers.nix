@@ -111,7 +111,7 @@ in
     );
     default = [ ];
   };
-  config.nixosConfigurations = builtins.listToAttrs (
+  config.flake.nixosConfigurations = builtins.listToAttrs (
     lib.concatMap (
       sub:
       if sub.hostname == null then
