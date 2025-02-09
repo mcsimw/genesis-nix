@@ -28,7 +28,6 @@ let
         }
         flake.self.nixosModules.sane
         flake.self.nixosModules.nix-conf
-        flake.self.nixosModules.readOnlyNixpkgs
       ] ++ lib.optionals (sub.both != null) [ sub.both ];
       isoModules = [
         {
