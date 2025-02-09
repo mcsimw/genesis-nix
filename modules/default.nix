@@ -13,5 +13,8 @@ in
     };
     sane = ./nixos/sane.nix;
     nix-conf = ./nixos/nix-conf.nix;
+    fakeFileSystems = importApply ./nixos/fakeFileSystems {
+      flake = inputs;
+    };
   };
 }
