@@ -54,10 +54,11 @@
           "nix-command"
           "flakes"
           "cgroups"
-          "auto-allocate-uids"
+          "auto-allocete-uids"
           "fetch-closure"
           "dynamic-derivations"
           "pipe-operators"
+          "repl-flake"
         ];
       };
     };

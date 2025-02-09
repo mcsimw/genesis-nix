@@ -104,7 +104,6 @@ in
     );
     default = [ ];
   };
-
   config.flake.nixosConfigurations = builtins.listToAttrs (
     lib.concatMap (
       sub:
