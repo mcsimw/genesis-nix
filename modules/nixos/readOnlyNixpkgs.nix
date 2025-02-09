@@ -1,4 +1,4 @@
-{ lib, config, inputs, withSystem, ... }:
+{ lib, config, inputs, withSystem, system, ... }:
 {
   imports = lib.optional (config.readOnlyNixpkgs inputs.nixpkgs.nixosModules.readOnlyPkgs);
   options = {
