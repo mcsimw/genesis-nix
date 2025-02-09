@@ -9,6 +9,6 @@
     };
   };
   config = lib.mkIf config.readOnlyNixpkgs {
-    nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs);
+    nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
   };
 }
