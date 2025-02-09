@@ -20,6 +20,7 @@ let
           # nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs);
           nixpkgs = {
             config.allowUnfree = true;
+            hostPlatform = sub.system;
             overlays = with flake; [
             #  emacs-overlay.ovelays.default
               chaotic.overlays.default
