@@ -17,11 +17,6 @@ let
       baseModules = [
         {
           networking.hostName = sub.hostname;
-          # nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs);
-          nixpkgs = lib.mkIf (!config.readOnlyNixpkgs) {
-            config.allowUnfree = lib.mkDefault true;
-            hostPlatform = sub.system;
-          };
           nix.settings = {
             substituters = [
               "https://nix-community.cachix.org"
