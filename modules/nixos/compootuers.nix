@@ -64,7 +64,6 @@ let
             inputs',
             self',
             system,
-            packages,
             ...
           }:
           {
@@ -75,7 +74,7 @@ let
               system
               ;
             withSystemArch = withSystem system;
-            inherit (config) packages;
+            packages = config.packages;
           }
         );
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
