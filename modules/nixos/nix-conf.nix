@@ -58,7 +58,6 @@
           "fetch-closure"
           "dynamic-derivations"
           "pipe-operators"
-          "repl-flake"
         ];
       };
     };
