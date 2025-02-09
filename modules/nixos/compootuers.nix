@@ -22,7 +22,7 @@ let
             config.allowUnfree = true;
             hostPlatform = sub.system;
             overlays = with flake; [
-            #  emacs-overlay.ovelays.default
+              emacs-overlay.ovelays.default
               chaotic.overlays.default
             ];
           };
