@@ -8,7 +8,4 @@
       description = "If true, import the readOnlyPkgs module to override the default nixpkgs configuration.";
     };
   };
-  config = lib.mkIf config.readOnlyNixpkgs {
-    nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
-  };
 }
