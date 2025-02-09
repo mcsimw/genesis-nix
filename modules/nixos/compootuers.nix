@@ -64,6 +64,7 @@ let
           { inputs', self', ... }:
           {
             inherit self' inputs' inputs;
+            arch = sub.system;
           }
         );
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
