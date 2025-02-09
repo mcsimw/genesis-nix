@@ -64,6 +64,7 @@ let
             inputs',
             self',
             system,
+            packages,
             ...
           }:
           {
