@@ -59,6 +59,7 @@ let
       ] ++ lib.optionals (sub.iso != null) [ sub.iso ];
       nonIsoModules = [
         inputs.nixpkgs.nixosModules.readOnlyPkgs
+        flake.disko.nixosModules.disko
       ] ++ lib.optionals (sub.src != null) [ sub.src ];
     in
     withSystem sub.system (
