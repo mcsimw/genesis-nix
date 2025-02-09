@@ -30,7 +30,6 @@ let
           };
         }
         flake.self.nixosModules.sane
-        flake.self.nixosModules.fakeFileSystems
         flake.self.nixosModules.nix-conf
         flake.chaotic.nixosModules.mesa-git
       ] ++ lib.optionals (sub.both != null) [ sub.both ];
@@ -60,6 +59,7 @@ let
       nonIsoModules = [
         inputs.nixpkgs.nixosModules.readOnlyPkgs
         flake.disko.nixosModules.disko
+        flake.self.nixosModules.fakeFileSystems
       ] ++ lib.optionals (sub.src != null) [ sub.src ];
     in
     withSystem sub.system (
