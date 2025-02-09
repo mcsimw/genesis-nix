@@ -61,11 +61,11 @@ let
       _:
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = withSystem sub.system (
-          { inputs', self', ... }:
+          { inputs', self', system, withSystem, ... }:
           {
-            inherit self' inputs' inputs;
-            arch = sub.system;
-            withSystemArch = withSystem sub.system;
+            inherit self' inputs' inputs system withSystem;
+            #arch = sub.system;
+#            withSystemArch = withSystem sub.system;
             packages = config.packages;
           }
         );
