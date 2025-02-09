@@ -53,7 +53,6 @@ let
         }
       ] ++ lib.optionals (sub.iso != null) [ sub.iso ];
       nonIsoModules = [
-        # inputs.nixpkgs.nixosModules.readOnlyPkgs
         flake.self.nixosModules.fakeFileSystems
       ] ++ lib.optionals (sub.src != null) [ sub.src ];
     in
@@ -61,12 +60,21 @@ let
       _:
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = withSystem sub.system (
-          { inputs', self', system, ... }:
           {
-            inherit self' inputs' inputs system;
-            #arch = sub.system;
+            inputs',
+            self',
+            system,
+            ...
+          }:
+          {
+            inherit
+              self'
+              inputs'
+              inputs
+              system
+              ;
             withSystemArch = withSystem system;
-            packages = config.packages;
+            inherit (config) packages;
           }
         );
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
