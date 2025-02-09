@@ -1,6 +1,6 @@
 { lib, config, inputs, withSystem, system, ... }:
 {
-  imports = lib.optional (config.readOnlyNixpkgs inputs.nixpkgs.nixosModules.readOnlyPkgs);
+ imports = [] ++ lib.optional config.readOnlyNixpkgs inputs.nixpkgs.nixosModules.readOnlyPkgs;
   options = {
     readOnlyNixpkgs = lib.mkOption {
       type = lib.types.bool;
