@@ -3,6 +3,7 @@
 {
   imports = [
     (import ./zfsos.nix { inherit config flake lib; })
+    flake.disko.nixosModules.disko
   ];
   options.fakeFileSystems.nix = {
     enable = lib.mkEnableOption "Enables nix filesystem";
