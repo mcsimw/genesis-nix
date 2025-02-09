@@ -21,7 +21,7 @@ let
           nixpkgs = {
             config.allowUnfree = true;
             overlays = with flake; [
-              emacs-overlay.ovelays.default
+            #  emacs-overlay.ovelays.default
               chaotic.overlays.default
             ];
           };
