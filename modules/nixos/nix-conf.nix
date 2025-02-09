@@ -23,7 +23,7 @@
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     system.rebuild.enableNg = true;
     nix = {
-      package = pkgs.nixVersions.latest;
+      package = lib.mkDefault pkgs.nixVersions.latest;
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
       );
@@ -47,7 +47,7 @@
         keep-going = true;
         connect-timeout = 5;
         sandbox = true;
-        http-connections = 128;
+        http-connections = 0;
         max-substitution-jobs = 128;
         download-buffer-size = 134217728;
         extra-experimental-features = [

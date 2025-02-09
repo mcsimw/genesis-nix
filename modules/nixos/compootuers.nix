@@ -17,7 +17,14 @@ let
       baseModules = [
         {
           networking.hostName = sub.hostname;
-          nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs);
+          # nixpkgs.pkgs = withSystem sub.system ({ pkgs, ... }: pkgs);
+          nixpkgs = {
+            config.allowUnfree = true;
+            overlays = with flake; [
+              emacs-overlay.ovelays.default
+              chaotic.overlays.default
+            ];
+          };
           nix.settings = {
             substituters = [
               "https://nix-community.cachix.org"
@@ -57,7 +64,7 @@ let
         }
       ] ++ lib.optionals (sub.iso != null) [ sub.iso ];
       nonIsoModules = [
-        inputs.nixpkgs.nixosModules.readOnlyPkgs
+        # inputs.nixpkgs.nixosModules.readOnlyPkgs
         flake.self.nixosModules.fakeFileSystems
       ] ++ lib.optionals (sub.src != null) [ sub.src ];
     in
@@ -104,49 +111,28 @@ in
     );
     default = [ ];
   };
-  config = {
-    perSystem =
-      {
-        pkgs,
-        system,
-        ...
-      }:
-      {
-        _module.args.pkgs = import inputs.nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-          overlays = with flake; [
-            emacs-overlay.overlays.default
-            chaotic.overlays.default
-          ];
-        };
-      };
-    flake.nixosConfigurations = builtins.listToAttrs (
-      lib.concatMap (
-        sub:
-        if sub.hostname == null then
-          [ ]
-        else
-          [
-            {
-              name = sub.hostname;
-              value = configForSub {
-                inherit sub;
-                iso = false;
-              };
-            }
-            {
-              name = "${sub.hostname}-iso";
-              value = configForSub {
-                inherit sub;
-                iso = true;
-              };
-            }
-          ]
-      ) config.compootuers
-    );
-  };
-  imports = [
-    flake.treefmt-nix.flakeModule
-  ];
+  config.nixosConfigurations = builtins.listToAttrs (
+    lib.concatMap (
+      sub:
+      if sub.hostname == null then
+        [ ]
+      else
+        [
+          {
+            name = sub.hostname;
+            value = configForSub {
+              inherit sub;
+              iso = false;
+            };
+          }
+          {
+            name = "${sub.hostname}-iso";
+            value = configForSub {
+              inherit sub;
+              iso = true;
+            };
+          }
+        ]
+    ) config.compootuers
+  );
 }
