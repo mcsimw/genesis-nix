@@ -66,6 +66,7 @@ let
             inherit self' inputs' inputs;
             arch = sub.system;
             withSystemArch = withSystem sub.system;
+            packages = config.packages;
           }
         );
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
