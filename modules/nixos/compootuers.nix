@@ -65,6 +65,7 @@ let
           {
             inherit self' inputs' inputs;
             arch = sub.system;
+            myWithSystem = withSystem sub.system;
           }
         );
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
