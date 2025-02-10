@@ -8,33 +8,24 @@
 }:
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
+  compootuersPath = builtins.toString (config.compootuers.path or "");
+  computedCompootuers = builtins.concatLists (
+    lib.optional (compootuersPath != "") (
+      map (
+        arch:
+        let
+          archPath = compootuersPath + "/" + arch;
+          hostNames = builtins.attrNames (builtins.readDir archPath);
+        in
+        map (host: {
+          hostname = host;
+          system = arch;
+          src = builtins.toPath (archPath + "/" + host);
+        }) hostNames
+      ) (builtins.attrNames (builtins.readDir compootuersPath))
+    )
+  );
 
-  # The user supplies a path via config.compootuers.path.
-  # Convert it to a string.
-  compootuersPath =
-    if config.compootuers.path != null then builtins.toString config.compootuers.path else "";
-
-  # Scan the compootuers directory.
-  computedCompootuers =
-    if config.compootuers.path != null then
-      builtins.concatLists (
-        map (
-          arch:
-          let
-            archPath = compootuersPath + "/" + arch;
-            hostNames = builtins.attrNames (builtins.readDir archPath);
-          in
-          map (host: {
-            hostname = host;
-            system = arch;
-            src = builtins.toPath (archPath + "/" + host);
-          }) hostNames
-        ) (builtins.attrNames (builtins.readDir compootuersPath))
-      )
-    else
-      [ ];
-
-  # Build a NixOS configuration for a given host record (sub).
   configForSub =
     {
       sub,
@@ -103,7 +94,6 @@ let
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
     );
-
 in
 {
   options.compootuers = {
