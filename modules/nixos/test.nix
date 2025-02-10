@@ -102,30 +102,32 @@ in
     default = [ ];
   };
 
-  config.flake = {
-    nixosConfigurations = builtins.listToAttrs (
-      builtins.concatLists (
-        lib.concatMap (
-          sub:
-          lib.optional (sub.hostname != null) [
-            {
-              name = sub.hostname;
-              value = configForSub {
-                inherit sub;
-                iso = false;
-              };
-            }
-            {
-              name = "${sub.hostname}-iso";
-              value = configForSub {
-                inherit sub;
-                iso = true;
-              };
-            }
-          ]
-        ) config.compootuers
-      )
-    );
+  config = {
+    flake = {
+      nixosConfigurations = builtins.listToAttrs (
+        builtins.concatLists (
+          lib.concatMap (
+            sub:
+            lib.optional (sub.hostname != null) [
+              {
+                name = sub.hostname;
+                value = configForSub {
+                  inherit sub;
+                  iso = false;
+                };
+              }
+              {
+                name = "${sub.hostname}-iso";
+                value = configForSub {
+                  inherit sub;
+                  iso = true;
+                };
+              }
+            ]
+          ) config.compootuers
+        )
+      );
+    };
     systems = lib.unique (builtins.filter (s: s != null) (map (sub: sub.system) config.compootuers));
   };
 }
