@@ -14,6 +14,9 @@ in
     test = importApply ./nixos/test.nix {
       flake = inputs;
     };
+    test1 = importApply ./nixos/test1.nix {
+      flake = inputs;
+    };
     sane = ./nixos/sane.nix;
     nix-conf = ./nixos/nix-conf.nix;
     fakeFileSystems = importApply ./nixos/fakeFileSystems {

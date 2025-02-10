@@ -14,43 +14,6 @@ let
       sub,
       iso ? false,
     }:
-    let
-      baseModules = [
-        {
-          networking.hostName = sub.hostname;
-        }
-        flake.self.nixosModules.sane
-        flake.self.nixosModules.nix-conf
-      ] ++ lib.optionals (sub.both != null) [ sub.both ];
-
-      isoModules = [
-        {
-          imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
-          boot.initrd.systemd.enable = lib.mkForce false;
-          isoImage.squashfsCompression = "lz4";
-          networking.wireless.enable = lib.mkForce false;
-          systemd.targets = {
-            sleep.enable = lib.mkForce false;
-            suspend.enable = lib.mkForce false;
-            hibernate.enable = lib.mkForce false;
-            hybrid-sleep.enable = lib.mkForce false;
-          };
-          users.users.nixos = {
-            initialPassword = "iso";
-            /*
-              For some reason the installation-cd-base.nix sets these two to "", causing a warning
-              and potentially stopping my initialPassword setting from working.
-            */
-            hashedPasswordFile = null;
-            hashedPassword = null;
-          };
-        }
-      ] ++ lib.optionals (sub.iso != null) [ sub.iso ];
-
-      nonIsoModules = [
-        flake.self.nixosModules.fakeFileSystems
-      ] ++ lib.optionals (sub.src != null) [ sub.src ];
-    in
     withSystem sub.system (
       {
         config,
@@ -59,6 +22,52 @@ let
         system,
         ...
       }:
+      let
+        baseModules =
+          [
+            { networking.hostName = sub.hostname; }
+            flake.self.nixosModules.sane
+            flake.self.nixosModules.nix-conf
+          ]
+          ++ lib.mkIf (sub.src != null && builtins.pathExists (builtins.toString sub.src + "/both.nix")) [
+            import
+            (builtins.toString sub.src + "/both.nix")
+          ];
+
+        isoModules =
+          [
+            {
+              imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+              boot.initrd.systemd.enable = lib.mkForce false;
+              isoImage.squashfsCompression = "lz4";
+              networking.wireless.enable = lib.mkForce false;
+              systemd.targets = {
+                sleep.enable = lib.mkForce false;
+                suspend.enable = lib.mkForce false;
+                hibernate.enable = lib.mkForce false;
+                hybrid-sleep.enable = lib.mkForce false;
+              };
+              users.users.nixos = {
+                initialPassword = "iso";
+                hashedPasswordFile = null;
+                hashedPassword = null;
+              };
+            }
+          ]
+          ++ lib.mkIf (sub.src != null && builtins.pathExists (builtins.toString sub.src + "/iso.nix")) [
+            import
+            (builtins.toString sub.src + "/iso.nix")
+          ];
+
+        nonIsoModules =
+          [
+            flake.self.nixosModules.fakeFileSystems
+          ]
+          ++ lib.mkIf (sub.src != null && builtins.pathExists (builtins.toString sub.src + "/default.nix")) [
+            import
+            (builtins.toString sub.src + "/default.nix")
+          ];
+      in
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit (config) packages;
@@ -73,6 +82,7 @@ let
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
     );
+
 in
 {
   options.compootuers = lib.mkOption {
@@ -81,14 +91,6 @@ in
         options = {
           hostname = lib.mkOption {
             type = lib.types.nullOr lib.types.str;
-            default = null;
-          };
-          both = lib.mkOption {
-            type = lib.types.nullOr lib.types.path;
-            default = null;
-          };
-          iso = lib.mkOption {
-            type = lib.types.nullOr lib.types.path;
             default = null;
           };
           src = lib.mkOption {
@@ -104,6 +106,7 @@ in
     );
     default = [ ];
   };
+
   config.flake.nixosConfigurations = builtins.listToAttrs (
     lib.concatMap (
       sub:

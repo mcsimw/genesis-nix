@@ -10,7 +10,10 @@ let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
 
   configForSub =
-    { sub, iso ? false, }:
+    {
+      sub,
+      iso ? false,
+    }:
     let
       baseModules =
         if sub.src != null then
@@ -21,9 +24,12 @@ let
             flake.self.nixosModules.sane
             flake.self.nixosModules.nix-conf
           ]
-          ++ (if builtins.pathExists (builtins.toString sub.src + "/both.nix")
-              then [ (import (builtins.toString sub.src + "/both.nix")) ]
-              else [])
+          ++ (
+            if builtins.pathExists (builtins.toString sub.src + "/both.nix") then
+              [ (import (builtins.toString sub.src + "/both.nix")) ]
+            else
+              [ ]
+          )
         else
           [
             {
@@ -54,9 +60,12 @@ let
               };
             }
           ]
-          ++ (if builtins.pathExists (builtins.toString sub.src + "/iso.nix")
-              then [ (import (builtins.toString sub.src + "/iso.nix")) ]
-              else [])
+          ++ (
+            if builtins.pathExists (builtins.toString sub.src + "/iso.nix") then
+              [ (import (builtins.toString sub.src + "/iso.nix")) ]
+            else
+              [ ]
+          )
         else
           [
             {
@@ -83,9 +92,12 @@ let
           [
             flake.self.nixosModules.fakeFileSystems
           ]
-          ++ (if builtins.pathExists (builtins.toString sub.src + "/default.nix")
-              then [ (import (builtins.toString sub.src + "/default.nix")) ]
-              else [])
+          ++ (
+            if builtins.pathExists (builtins.toString sub.src + "/default.nix") then
+              [ (import (builtins.toString sub.src + "/default.nix")) ]
+            else
+              [ ]
+          )
         else
           [
             flake.self.nixosModules.fakeFileSystems
@@ -106,7 +118,8 @@ let
             inputs
             inputs'
             self'
-            system;
+            system
+            ;
           withSystemArch = withSystem system;
         };
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
@@ -161,4 +174,3 @@ in
     ) config.compootuers
   );
 }
-
