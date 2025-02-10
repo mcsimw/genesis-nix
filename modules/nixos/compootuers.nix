@@ -31,7 +31,6 @@ let
           ++ lib.optional (sub.src != null && builtins.pathExists (builtins.toString sub.src + "/both.nix")) (
             import (builtins.toString sub.src + "/both.nix")
           );
-
         isoModules =
           [
             {
