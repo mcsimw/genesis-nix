@@ -1,43 +1,8 @@
 {
-  description = "Description for the project";
-  outputs =
-    inputs:
-    let
-      mkFlake = inputs.flake-parts.lib.mkFlake { inherit inputs; };
-      genesisOut = mkFlake {
-        systems = [
-          "x86_64-linux"
-          "aarch64-linux"
-          "aarch64-darwin"
-          "x86_64-darwin"
-        ];
-        perSystem.treefmt = {
-          projectRootFile = "flake.nix";
-          programs = {
-            nixfmt.enable = true;
-            deadnix.enable = true;
-            statix.enable = true;
-            dos2unix.enable = true;
-          };
-        };
-        imports = [
-          inputs.treefmt-nix.flakeModule
-          ./modules
-        ];
-      };
-    in
-    genesisOut
-      // {
-        flake = {
-          yooo = mkFlake;
-        };
-      };
+  description = "Nix Genesis - Custom Flake Utilities";
+
   inputs = {
-    nixpkgs = {
-      type = "github";
-      owner = "NixOS";
-      repo = "nixpkgs";
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs";
     flake-parts = {
       type = "github";
       owner = "hercules-ci";
@@ -62,4 +27,43 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
+
+  outputs =
+    inputs@{ flake-parts, ... }:
+    let
+      # Load flake-parts' library
+      inherit (flake-parts) lib;
+
+      # Define mkFlake function so users can call it via an alias
+      inherit (lib) mkFlake;
+    in
+    # Use flake-parts' mkFlake to structure outputs properly
+    lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+
+      perSystem.treefmt = {
+        projectRootFile = "flake.nix";
+        programs = {
+          nixfmt.enable = true;
+          deadnix.enable = true;
+          statix.enable = true;
+          dos2unix.enable = true;
+        };
+      };
+
+      imports = [
+        inputs.treefmt-nix.flakeModule
+        ./modules
+      ];
+
+      # Expose mkFlake under an alias
+      flake = {
+        yooo = mkFlake;
+      };
+    };
 }
