@@ -69,6 +69,7 @@ This repository is designed to be used as a foundation for your own NixOS system
   description = "";
   outputs =
     inputs:
+    # You can pull in my flake-parts from nix-genesis instead of adding your own to your flake inputs
     inputs.nix-genesis.inputs.flake-parts.lib.mkFlake { inherit inputs; } { 
       systems = [
         # include all of the arch types you plan on using in this flake
@@ -91,6 +92,7 @@ This repository is designed to be used as a foundation for your own NixOS system
       ];
       imports = [
         inputs.nix-genesis.nixosModules.compootuers 
+         # You can pull in my treefmt-nix from nix-genesis instead of adding your own to your flake inputs if you want
         inputs.nix-genesis.inputs.treefmt-nix.flakeModule 
         ./packages
       ];
