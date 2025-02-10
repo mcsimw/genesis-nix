@@ -10,7 +10,8 @@ let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
 
   # Retrieve the base path from options. If not provided, we use the empty string.
-  compootuersPath = builtins.toString (config.compootuers.path or "");
+  compootuersPath =
+    if config.compootuers.path != null then builtins.toString config.compootuers.path else "";
 
   # Scan the compootuers directory if compootuersPath is nonempty.
   computedCompootuers =
@@ -98,11 +99,11 @@ let
 in
 {
   # Declare the compootuers option as an attribute set.
-  options.compootuers = lib.mkOption {
-    type = lib.types.attrs {
-      path = lib.types.nullOr lib.types.path;
+  options.compootuers = {
+    path = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
     };
-    default = {};  # Default to an empty set, so the user doesn't have to define it.
   };
 
   config = {
