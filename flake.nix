@@ -1,5 +1,5 @@
 {
-  description = "NixCastratum";
+  description = "nix-genesis";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
     flake-parts = {
@@ -51,5 +51,5 @@
         ./modules
       ];
     }
-    // { NixCastratum = inputs.flake-parts.lib.mkFlake; };
+    // { mkFlake = inputs.flake-parts.lib.mkFlake; };
 }
