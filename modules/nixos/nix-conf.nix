@@ -54,7 +54,7 @@
           "nix-command"
           "flakes"
           "cgroups"
-          "auto-allocete-uids"
+          "auto-allocate-uids"
           "fetch-closure"
           "dynamic-derivations"
           "pipe-operators"
