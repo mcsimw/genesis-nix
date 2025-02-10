@@ -62,13 +62,7 @@ The root `flake.nix` file sets up the project with:
 
 ## Getting Started
 
-### Prerequisites
-
-- **Nix Installed:** Ensure that you have [Nix](https://nixos.org/download.html) installed with flake su
-
-
-
-  This repository is designed to be used as a foundation for your own NixOS system configuration. To get started, you must create an external repository that includes `nix-genesis` as an input. Below is an example configuration demonstrating how to integrate `nix-genesis` into your setup. Here is an example configuration you can use:
+This repository is designed to be used as a foundation for your own NixOS system configuration. To get started, you must create an external repository that includes `nix-genesis` as an input. Below is an example configuration demonstrating how to integrate `nix-genesis` into your setup. Here is an example configuration you can use:
 
 ```nix
 {
