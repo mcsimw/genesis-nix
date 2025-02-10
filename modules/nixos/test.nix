@@ -31,8 +31,7 @@ let
             }
             flake.self.nixosModules.sane
             flake.self.nixosModules.nix-conf
-          ]
-          ++ lib.optionals (sub.both != null) [ sub.both ];
+          ];
 
       isoModules =
         if sub.src != null then
@@ -77,8 +76,7 @@ let
                 hashedPassword = null;
               };
             }
-          ]
-          ++ lib.optionals (sub.iso != null) [ sub.iso ];
+          ];
 
       nonIsoModules =
         if sub.src != null then
@@ -91,8 +89,7 @@ let
         else
           [
             flake.self.nixosModules.fakeFileSystems
-          ]
-          ++ lib.optionals (sub.src != null) [ sub.src ];
+          ];
     in
     withSystem sub.system (
       {
@@ -125,14 +122,6 @@ in
             type = lib.types.nullOr lib.types.str;
             default = null;
           };
-          both = lib.mkOption {
-            type = lib.types.nullOr lib.types.path;
-            default = null;
-          };
-          iso = lib.mkOption {
-            type = lib.types.nullOr lib.types.path;
-            default = null;
-          };
           src = lib.mkOption {
             type = lib.types.path;
             default = null;
@@ -146,6 +135,7 @@ in
     );
     default = [ ];
   };
+
   config.flake.nixosConfigurations = builtins.listToAttrs (
     lib.concatMap (
       sub:
