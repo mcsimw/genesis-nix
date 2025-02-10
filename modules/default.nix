@@ -17,7 +17,7 @@ in
     test1 = importApply ./nixos/test1.nix {
       flake = inputs;
     };
-    test2 = importApply ./nixos/test1.nix {
+    test2 = importApply ./nixos/test2.nix {
       flake = inputs;
     };
     sane = ./nixos/sane.nix;
