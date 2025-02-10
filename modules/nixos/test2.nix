@@ -9,13 +9,13 @@
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
 
-  # Convert the compootuers path to a string, defaulting to the empty string.
+  # Retrieve the base path from options.
   compootuersPath = builtins.toString (config.compootuers.path or "");
 
-  # Build the list of compooteurs by conditionally scanning the directory structure.
+  # Scan the compootuers directory using lib.optional.
   computedCompootuers =
     builtins.concatLists (
-      lib.optional (config.compootuers.path != null)
+      lib.optional (compootuersPath != "")
         (map (arch:
           let
             archPath = compootuersPath + "/" + arch;
@@ -29,7 +29,11 @@ let
         ) (builtins.attrNames (builtins.readDir compootuersPath)))
     );
 
-  configForSub = { sub, iso ? false, }:
+  # Build a NixOS configuration for a given host record (sub).
+  configForSub =
+    { sub,
+      iso ? false,
+    }:
     withSystem sub.system (
       {
         config,
@@ -93,6 +97,7 @@ let
 
 in
 {
+  # Declare the compootuers option as an attribute set with a "path" key.
   options.compootuers = {
     path = lib.mkOption {
       type = lib.types.path;
