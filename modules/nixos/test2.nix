@@ -8,7 +8,11 @@
 }:
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
+
+  # Get the base path from options (or default to the empty string)
   compootuersPath = builtins.toString (config.compootuers.path or "");
+
+  # Build the list of compooteurs using lib.optional.
   computedCompootuers = builtins.concatLists (
     lib.optional (compootuersPath != "") (
       map (
@@ -94,6 +98,7 @@ let
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
     );
+
 in
 {
   options.compootuers = {
@@ -102,6 +107,7 @@ in
       default = null;
     };
   };
+
   config = {
     flake = {
       nixosConfigurations = builtins.listToAttrs (
