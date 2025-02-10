@@ -9,30 +9,37 @@
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
 
-  # Compute the list of compooteurs from the directory structure.
+  # The user supplies a path via config.compootuers.path.
+  # Convert it to a string.
   compootuersPath =
-    if config.compootuers.path != null
-    then builtins.toString config.compootuers.path
-    else "";
+    if config.compootuers.path != null then builtins.toString config.compootuers.path else "";
+
+  # Scan the compootuers directory.
   computedCompootuers =
     if config.compootuers.path != null then
       builtins.concatLists (
-        map (arch:
+        map (
+          arch:
           let
             archPath = compootuersPath + "/" + arch;
             hostNames = builtins.attrNames (builtins.readDir archPath);
           in
-            map (host: {
-              hostname = host;
-              system = arch;
-              src = builtins.toPath (archPath + "/" + host);
-            }) hostNames
+          map (host: {
+            hostname = host;
+            system = arch;
+            src = builtins.toPath (archPath + "/" + host);
+          }) hostNames
         ) (builtins.attrNames (builtins.readDir compootuersPath))
       )
     else
-      [];
+      [ ];
 
-  configForSub = { sub, iso ? false, }:
+  # Build a NixOS configuration for a given host record (sub).
+  configForSub =
+    {
+      sub,
+      iso ? false,
+    }:
     withSystem sub.system (
       {
         config,
@@ -48,9 +55,9 @@ let
             flake.self.nixosModules.sane
             flake.self.nixosModules.nix-conf
           ]
-          ++ lib.optional (sub.src != null &&
-                          builtins.pathExists (builtins.toString sub.src + "/both.nix"))
-               (import (builtins.toString sub.src + "/both.nix"));
+          ++ lib.optional (sub.src != null && builtins.pathExists (builtins.toString sub.src + "/both.nix")) (
+            import (builtins.toString sub.src + "/both.nix")
+          );
         isoModules =
           [
             {
@@ -71,39 +78,40 @@ let
               };
             }
           ]
-          ++ lib.optional (sub.src != null &&
-                          builtins.pathExists (builtins.toString sub.src + "/iso.nix"))
-               (import (builtins.toString sub.src + "/iso.nix"));
+          ++ lib.optional (sub.src != null && builtins.pathExists (builtins.toString sub.src + "/iso.nix")) (
+            import (builtins.toString sub.src + "/iso.nix")
+          );
         nonIsoModules =
           [
             flake.self.nixosModules.fakeFileSystems
           ]
-          ++ lib.optional (sub.src != null &&
-                          builtins.pathExists (builtins.toString sub.src + "/default.nix"))
-               (import (builtins.toString sub.src + "/default.nix"));
+          ++ lib.optional (
+            sub.src != null && builtins.pathExists (builtins.toString sub.src + "/default.nix")
+          ) (import (builtins.toString sub.src + "/default.nix"));
       in
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit (config) packages;
-          inherit inputs inputs' self' system;
+          inherit
+            inputs
+            inputs'
+            self'
+            system
+            ;
           withSystemArch = withSystem system;
         };
-        modules = baseModules
-          ++ lib.optionals iso isoModules
-          ++ lib.optionals (!iso) nonIsoModules;
+        modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
     );
 
 in
 {
-  options.compootuers = lib.mkOption {
-    type = lib.types.attrs {
-      path = lib.mkOption {
-        type = lib.types.path;
-        default = null;
-      };
+  # Define the compootuers option as a simple attribute set.
+  options.compootuers = {
+    path = lib.mkOption {
+      type = lib.types.path;
+      default = null;
     };
-    default = { path = null; };
   };
 
   config = {
@@ -112,25 +120,26 @@ in
         builtins.concatLists (
           lib.concatMap (
             sub:
-            lib.optional (sub.hostname != null)
-              [
-                {
-                  name = sub.hostname;
-                  value = configForSub { inherit sub; iso = false; };
-                }
-                {
-                  name = "${sub.hostname}-iso";
-                  value = configForSub { inherit sub; iso = true; };
-                }
-              ]
+            lib.optional (sub.hostname != null) [
+              {
+                name = sub.hostname;
+                value = configForSub {
+                  inherit sub;
+                  iso = false;
+                };
+              }
+              {
+                name = "${sub.hostname}-iso";
+                value = configForSub {
+                  inherit sub;
+                  iso = true;
+                };
+              }
+            ]
           ) computedCompootuers
         )
       );
     };
-    systems = lib.unique (
-      builtins.filter (s: s != null)
-        (map (sub: sub.system) computedCompootuers)
-    );
+    systems = lib.unique (builtins.filter (s: s != null) (map (sub: sub.system) computedCompootuers));
   };
 }
-
