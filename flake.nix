@@ -28,16 +28,15 @@
     };
   };
 
-  outputs =
-    inputs@{ flake-parts, ... }:
+  outputs = inputs@{ flake-parts, nixpkgs, ... }:
     let
       # Load flake-parts' library
-      inherit (flake-parts) lib;
+      lib = flake-parts.lib;
 
       # Define mkFlake function so users can call it via an alias
-      inherit (lib) mkFlake;
+      mkFlake = lib.mkFlake;
     in
-    # Use flake-parts' mkFlake to structure outputs properly
+    # First, generate the base flake output
     lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
@@ -60,10 +59,6 @@
         inputs.treefmt-nix.flakeModule
         ./modules
       ];
-
-      # Expose mkFlake under an alias
-      flake = {
-        yooo = mkFlake;
-      };
-    };
+    } // { yooo = mkFlake; }; # <-- ADDING THE ALIAS SAFELY
 }
+
