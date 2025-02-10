@@ -24,13 +24,14 @@
           inputs.treefmt-nix.flakeModule
           ./modules
         ];
-        # Re-export mkFlake under the key "yooo"
+      };
+    in
+    genesisOut
+      // {
         flake = {
           yooo = mkFlake;
         };
       };
-    in
-    genesisOut;
   inputs = {
     nixpkgs = {
       type = "github";
