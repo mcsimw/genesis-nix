@@ -1,6 +1,5 @@
 {
-  description = "Nix Genesis - Custom Flake Utilities";
-
+  description = "NixCastratum";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
     flake-parts = {
@@ -27,17 +26,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
-  outputs = inputs@{ flake-parts, nixpkgs, ... }:
-    let
-      # Load flake-parts' library
-      lib = flake-parts.lib;
-
-      # Define mkFlake function so users can call it via an alias
-      mkFlake = lib.mkFlake;
-    in
-    # First, generate the base flake output
-    lib.mkFlake { inherit inputs; } {
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -59,6 +50,6 @@
         inputs.treefmt-nix.flakeModule
         ./modules
       ];
-    } // { yooo = mkFlake; }; # <-- ADDING THE ALIAS SAFELY
+    }
+    // { NixCastratum = inputs.flake-parts.lib.mkFlake; };
 }
-
