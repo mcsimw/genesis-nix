@@ -58,7 +58,6 @@ let
           ++ lib.optional (sub.src != null && builtins.pathExists (builtins.toString sub.src + "/iso.nix")) (
             import (builtins.toString sub.src + "/iso.nix")
           );
-
         nonIsoModules =
           [
             flake.self.nixosModules.fakeFileSystems
