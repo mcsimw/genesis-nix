@@ -9,7 +9,11 @@
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
 
-  configForSub = { sub, iso ? false, }:
+  configForSub =
+    {
+      sub,
+      iso ? false,
+    }:
     withSystem sub.system (
       {
         config,
@@ -25,9 +29,9 @@ let
             flake.self.nixosModules.sane
             flake.self.nixosModules.nix-conf
           ]
-          ++ lib.optional (sub.src != null &&
-                          builtins.pathExists (builtins.toString sub.src + "/both.nix"))
-               (import (builtins.toString sub.src + "/both.nix"));
+          ++ lib.optional (sub.src != null && builtins.pathExists (builtins.toString sub.src + "/both.nix")) (
+            import (builtins.toString sub.src + "/both.nix")
+          );
 
         isoModules =
           [
@@ -49,65 +53,78 @@ let
               };
             }
           ]
-          ++ lib.optional (sub.src != null &&
-                          builtins.pathExists (builtins.toString sub.src + "/iso.nix"))
-               (import (builtins.toString sub.src + "/iso.nix"));
+          ++ lib.optional (sub.src != null && builtins.pathExists (builtins.toString sub.src + "/iso.nix")) (
+            import (builtins.toString sub.src + "/iso.nix")
+          );
 
         nonIsoModules =
           [
             flake.self.nixosModules.fakeFileSystems
           ]
-          ++ lib.optional (sub.src != null &&
-                          builtins.pathExists (builtins.toString sub.src + "/default.nix"))
-               (import (builtins.toString sub.src + "/default.nix"));
+          ++ lib.optional (
+            sub.src != null && builtins.pathExists (builtins.toString sub.src + "/default.nix")
+          ) (import (builtins.toString sub.src + "/default.nix"));
       in
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit (config) packages;
-          inherit inputs inputs' self' system;
+          inherit
+            inputs
+            inputs'
+            self'
+            system
+            ;
           withSystemArch = withSystem system;
         };
-        modules = baseModules
-          ++ lib.optionals iso isoModules
-          ++ lib.optionals (!iso) nonIsoModules;
+        modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
     );
 
 in
 {
   options.compootuers = lib.mkOption {
-    type = lib.types.listOf (lib.types.submodule {
-      options = {
-        hostname = lib.mkOption {
-          type = lib.types.nullOr lib.types.str;
-          default = null;
+    type = lib.types.listOf (
+      lib.types.submodule {
+        options = {
+          hostname = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+          };
+          src = lib.mkOption {
+            type = lib.types.path;
+            default = null;
+          };
+          system = lib.mkOption {
+            type = lib.types.str;
+            default = null;
+          };
         };
-        src = lib.mkOption {
-          type = lib.types.path;
-          default = null;
-        };
-        system = lib.mkOption {
-          type = lib.types.str;
-          default = null;
-        };
-      };
-    });
+      }
+    );
     default = [ ];
   };
 
   config.flake.nixosConfigurations = builtins.listToAttrs (
-    lib.concatMap (sub:
-      lib.optional (sub.hostname != null)
-        [
+    builtins.concatLists (
+      lib.concatMap (
+        sub:
+        lib.optional (sub.hostname != null) [
           {
             name = sub.hostname;
-            value = configForSub { inherit sub; iso = false; };
+            value = configForSub {
+              inherit sub;
+              iso = false;
+            };
           }
           {
             name = "${sub.hostname}-iso";
-            value = configForSub { inherit sub; iso = true; };
+            value = configForSub {
+              inherit sub;
+              iso = true;
+            };
           }
         ]
-    ) config.compootuers
+      ) config.compootuers
+    )
   );
 }
