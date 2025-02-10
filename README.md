@@ -169,7 +169,7 @@ This project is licensed under the [Unlicense License](LICENSE).
 
 ## Contact
 
-For questions, suggestions, or support, please open an issue in this repository or contact [[maor@mscimw.com](mailto\:maor@mcsimw.com)].
+For questions, suggestions, or support, please open an issue in this repository or contact [[maor@mcsimw.com](mailto\:maor@mcsimw.com)].
 
 ---
 
