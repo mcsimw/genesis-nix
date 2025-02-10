@@ -91,11 +91,11 @@ in
             default = null;
           };
           src = lib.mkOption {
-            type = lib.types.path;
+            type = lib.types.nullOr lib.types.path;
             default = null;
           };
           system = lib.mkOption {
-            type = lib.types.str;
+           type = lib.types.nullOr lib.types.path; 
             default = null;
           };
         };
