@@ -35,7 +35,6 @@
         "x86_64-darwin"
         "aarch64-darwin"
       ];
-
       perSystem.treefmt = {
         projectRootFile = "flake.nix";
         programs = {
@@ -45,7 +44,6 @@
           dos2unix.enable = true;
         };
       };
-
       imports = [
         inputs.treefmt-nix.flakeModule
         ./modules
