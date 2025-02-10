@@ -2,27 +2,35 @@
   description = "Description for the project";
   outputs =
     inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-        "x86_64-darwin"
-      ];
-      perSystem.treefmt = {
-        projectRootFile = "flake.nix";
-        programs = {
-          nixfmt.enable = true;
-          deadnix.enable = true;
-          statix.enable = true;
-          dos2unix.enable = true;
+    let
+      mkFlake = inputs.flake-parts.lib.mkFlake { inherit inputs; };
+      genesisOut = mkFlake {
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+          "aarch64-darwin"
+          "x86_64-darwin"
+        ];
+        perSystem.treefmt = {
+          projectRootFile = "flake.nix";
+          programs = {
+            nixfmt.enable = true;
+            deadnix.enable = true;
+            statix.enable = true;
+            dos2unix.enable = true;
+          };
+        };
+        imports = [
+          inputs.treefmt-nix.flakeModule
+          ./modules
+        ];
+        # Re-export mkFlake under the key "yooo"
+        flake = {
+          yooo = mkFlake;
         };
       };
-      imports = [
-        inputs.treefmt-nix.flakeModule
-        ./modules
-      ];
-    };
+    in
+    genesisOut;
   inputs = {
     nixpkgs = {
       type = "github";
