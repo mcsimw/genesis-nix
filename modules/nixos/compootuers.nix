@@ -8,6 +8,26 @@
 }:
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
+  compootuersPath =
+    if config.compootuers.path != null then builtins.toString config.compootuers.path else "";
+  computedCompootuers =
+    if compootuersPath != "" then
+      builtins.concatLists (
+        map (
+          arch:
+          let
+            archPath = compootuersPath + "/" + arch;
+            hostNames = builtins.attrNames (builtins.readDir archPath);
+          in
+          map (host: {
+            hostname = host;
+            system = arch;
+            src = builtins.toPath (archPath + "/" + host);
+          }) hostNames
+        ) (builtins.attrNames (builtins.readDir compootuersPath))
+      )
+    else
+      [ ];
   configForSub =
     {
       sub,
@@ -82,48 +102,38 @@ let
     );
 in
 {
-  options.compootuers = lib.mkOption {
-    type = lib.types.listOf (
-      lib.types.submodule {
-        options = {
-          hostname = lib.mkOption {
-            type = lib.types.nullOr lib.types.str;
-            default = null;
-          };
-          src = lib.mkOption {
-            type = lib.types.nullOr lib.types.path;
-            default = null;
-          };
-          system = lib.mkOption {
-            type = lib.types.nullOr lib.types.path;
-            default = null;
-          };
-        };
-      }
-    );
-    default = [ ];
+  options.compootuers = {
+    path = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
+    };
   };
-  config.flake.nixosConfigurations = builtins.listToAttrs (
-    builtins.concatLists (
-      lib.concatMap (
-        sub:
-        lib.optional (sub.hostname != null) [
-          {
-            name = sub.hostname;
-            value = configForSub {
-              inherit sub;
-              iso = false;
-            };
-          }
-          {
-            name = "${sub.hostname}-iso";
-            value = configForSub {
-              inherit sub;
-              iso = true;
-            };
-          }
-        ]
-      ) config.compootuers
-    )
-  );
+  config = {
+    flake = {
+      nixosConfigurations = builtins.listToAttrs (
+        builtins.concatLists (
+          lib.concatMap (
+            sub:
+            lib.optional (sub.hostname != null) [
+              {
+                name = sub.hostname;
+                value = configForSub {
+                  inherit sub;
+                  iso = false;
+                };
+              }
+              {
+                name = "${sub.hostname}-iso";
+                value = configForSub {
+                  inherit sub;
+                  iso = true;
+                };
+              }
+            ]
+          ) computedCompootuers
+        )
+      );
+    };
+    systems = lib.unique (builtins.filter (s: s != null) (map (sub: sub.system) computedCompootuers));
+  };
 }
