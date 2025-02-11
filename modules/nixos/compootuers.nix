@@ -7,6 +7,7 @@
   ...
 }:
 let
+  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
   compootuersPath = lib.mkIf (config.compootuers.path != null) (
     builtins.toString config.compootuers.path
   );
