@@ -7,10 +7,10 @@
   ...
 }:
 let
-  compootuersPath = mkIf (config.compootuers.path != null) (
+  compootuersPath = lib.mkIf (config.compootuers.path != null) (
     builtins.toString config.compootuers.path
   );
-  computedCompootuers = mkIf (compootuersPath != null && builtins.pathExists compootuersPath) (
+  computedCompootuers = lib.mkIf (compootuersPath != null && builtins.pathExists compootuersPath) (
     builtins.concatLists (
       map (
         system:
