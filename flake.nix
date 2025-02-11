@@ -51,5 +51,6 @@
     }
     // {
       inherit (inputs.flake-parts.lib) mkFlake;
+      fmt = inputs.treefmt-nix.flakeModule;
     };
 }
