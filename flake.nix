@@ -14,20 +14,8 @@
       repo = "treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    impermanence = {
-      type = "github";
-      owner = "nix-community";
-      repo = "impermanence";
-    };
-    disko = {
-      type = "github";
-      owner = "nix-community";
-      repo = "disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
-  outputs =
-    inputs:
+  outputs = inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
