@@ -32,7 +32,7 @@ let
       iso ? false,
     }:
     let
-      inherit (sub) system;
+      inherit (sub) system hostname src;
     in
     withSystem system (
       {
@@ -52,8 +52,8 @@ let
             flake.self.nixosModules.sane
             flake.self.nixosModules.nix-conf
           ]
-          ++ lib.optional (sub.src != null && builtins.pathExists "${sub.src}/both.nix") (
-            import "${sub.src}/both.nix"
+          ++ lib.optional (src != null && builtins.pathExists "${src}/both.nix") (
+            import "${src}/both.nix"
           );
         isoModules =
           [
@@ -79,15 +79,15 @@ let
               };
             }
           ]
-          ++ lib.optional (sub.src != null && builtins.pathExists "${sub.src}/iso.nix") (
-            import "${sub.src}/iso.nix"
+          ++ lib.optional (src != null && builtins.pathExists "${src}/iso.nix") (
+            import "${src}/iso.nix"
           );
         nonIsoModules =
           [
             flake.self.nixosModules.fakeFileSystems
           ]
-          ++ lib.optional (sub.src != null && builtins.pathExists "${sub.src}/default.nix") (
-            import "${sub.src}/default.nix"
+          ++ lib.optional (src != null && builtins.pathExists "${src}/default.nix") (
+            import "${src}/default.nix"
           );
       in
       inputs.nixpkgs.lib.nixosSystem {
