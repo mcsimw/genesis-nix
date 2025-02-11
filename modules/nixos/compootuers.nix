@@ -133,6 +133,6 @@ in
         ) computedCompootuers
       )
     );
-    systems = lib.unique (builtins.filter (s: s != null) (map (sub: system) computedCompootuers));
+    systems = lib.unique (builtins.filter (s: s != null) (map ({ system, ... }: system) computedCompootuers));
   };
 }
