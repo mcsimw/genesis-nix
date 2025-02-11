@@ -14,15 +14,14 @@ let
     if compootuersPath != "" then
       builtins.concatLists (
         map (
-          arch:
+          system:
           let
-            archPath = compootuersPath + "/" + arch;
-            hostNames = builtins.attrNames (builtins.readDir archPath);
+            systemPath = compootuersPath + "/" + system;
+            hostNames = builtins.attrNames (builtins.readDir systemPath);
           in
-          map (host: {
-            hostname = host;
-            system = arch;
-            src = builtins.toPath (archPath + "/" + host);
+          map (hostname: {
+            inherit hostname system;
+            src = builtins.toPath (systemPath + "/" + hostname);
           }) hostNames
         ) (builtins.attrNames (builtins.readDir compootuersPath))
       )
