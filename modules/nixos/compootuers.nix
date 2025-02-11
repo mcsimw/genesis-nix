@@ -101,11 +101,9 @@ let
     );
 in
 {
-  options.compootuers = {
-    path = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
-    };
+  options.compootuers.path = lib.mkOption {
+    type = lib.types.nullOr lib.types.path;
+    default = null;
   };
   config = {
     flake = {
