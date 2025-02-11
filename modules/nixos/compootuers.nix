@@ -8,10 +8,10 @@
 }:
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
-  compootuersPath = lib.mkIf (config.compootuers.path != null) (
+  compootuersPath = lib.optionalString (config.compootuers.path != null) (
     builtins.toString config.compootuers.path
   );
-  computedCompootuers = lib.mkIf (compootuersPath != null && builtins.pathExists compootuersPath) (
+  computedCompootuers = lib.optionals (compootuersPath != "") (
     builtins.concatLists (
       map (
         system:
@@ -42,17 +42,13 @@ let
       let
         baseModules =
           [
-            {
-              networking.hostName = sub.hostname;
-              nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
-            }
+            { networking.hostName = sub.hostname; }
             flake.self.nixosModules.sane
             flake.self.nixosModules.nix-conf
           ]
           ++ lib.optional (sub.src != null && builtins.pathExists "${sub.src}/both.nix") (
             import "${sub.src}/both.nix"
           );
-
         isoModules =
           [
             {
@@ -69,8 +65,8 @@ let
               users.users.nixos = {
                 initialPassword = "iso";
                 /*
-                  For some reason, the installation-cd-base.nix sets these two to "", causing a
-                  warning and potentially stopping my initialPassword setting from working.
+                  For some reason the installation-cd-base.nix sets these two to "", causing a warning
+                  and potentially stopping my initialPassword setting from working.
                 */
                 hashedPasswordFile = null;
                 hashedPassword = null;
@@ -87,7 +83,6 @@ let
           ++ lib.optional (sub.src != null && builtins.pathExists "${sub.src}/default.nix") (
             import "${sub.src}/default.nix"
           );
-
       in
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
@@ -98,6 +93,7 @@ let
             self'
             system
             ;
+          withSystemArch = withSystem system;
         };
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
@@ -106,7 +102,6 @@ in
 {
   options.compootuers.path = lib.mkOption {
     type = lib.types.nullOr lib.types.path;
-    description = "Path to the directory containing system configurations.";
     default = null;
   };
   config = {
