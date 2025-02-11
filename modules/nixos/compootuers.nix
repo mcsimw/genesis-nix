@@ -42,7 +42,10 @@ let
       let
         baseModules =
           [
-            { networking.hostName = sub.hostname; }
+            { 
+              networking.hostName = sub.hostname; 
+              nixpkgs.pkgs = withSystem sub.system ({pkgs, ...}: pkgs);
+            }
             flake.self.nixosModules.sane
             flake.self.nixosModules.nix-conf
           ]
@@ -93,7 +96,6 @@ let
             self'
             system
             ;
-          withSystemArch = withSystem system;
         };
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
