@@ -8,23 +8,19 @@
 }:
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
-  compootuersPath = lib.optionalString (config.compootuers.path != null) (
-    builtins.toString config.compootuers.path
-  );
-  computedCompootuers = lib.optionals (compootuersPath != "") (
-    builtins.concatLists (
-      map (
-        system:
-        let
-          systemPath = "${compootuersPath}/${system}";
-          hostNames = builtins.attrNames (builtins.readDir systemPath);
-        in
-        map (hostname: {
-          inherit hostname system;
-          src = builtins.toPath "${systemPath}/${hostname}";
-        }) hostNames
-      ) (builtins.attrNames (builtins.readDir compootuersPath))
-    )
+  compootuersPath = builtins.toString config.compootuers.path;
+  computedCompootuers = builtins.concatLists (
+    map (
+      system:
+      let
+        systemPath = "${compootuersPath}/${system}";
+        hostNames = builtins.attrNames (builtins.readDir systemPath);
+      in
+      map (hostname: {
+        inherit hostname system;
+        src = builtins.toPath "${systemPath}/${hostname}";
+      }) hostNames
+    ) (builtins.attrNames (builtins.readDir compootuersPath))
   );
   configForSub =
     {
@@ -42,13 +38,17 @@ let
       let
         baseModules =
           [
-            { networking.hostName = sub.hostname; }
+            {
+              networking.hostName = sub.hostname;
+              nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
+            }
             flake.self.nixosModules.sane
             flake.self.nixosModules.nix-conf
           ]
           ++ lib.optional (sub.src != null && builtins.pathExists "${sub.src}/both.nix") (
             import "${sub.src}/both.nix"
           );
+
         isoModules =
           [
             {
@@ -65,8 +65,8 @@ let
               users.users.nixos = {
                 initialPassword = "iso";
                 /*
-                  For some reason the installation-cd-base.nix sets these two to "", causing a warning
-                  and potentially stopping my initialPassword setting from working.
+                  For some reason, the installation-cd-base.nix sets these two to "", causing a
+                  warning and potentially stopping my initialPassword setting from working.
                 */
                 hashedPasswordFile = null;
                 hashedPassword = null;
@@ -83,6 +83,7 @@ let
           ++ lib.optional (sub.src != null && builtins.pathExists "${sub.src}/default.nix") (
             import "${sub.src}/default.nix"
           );
+
       in
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
@@ -93,7 +94,6 @@ let
             self'
             system
             ;
-          withSystemArch = withSystem system;
         };
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
@@ -101,8 +101,8 @@ let
 in
 {
   options.compootuers.path = lib.mkOption {
-    type = lib.types.nullOr lib.types.path;
-    default = null;
+    type = lib.types.path;
+    description = "Path to the directory containing system configurations.";
   };
   config = {
     flake.nixosConfigurations = builtins.listToAttrs (
@@ -128,6 +128,6 @@ in
         ) computedCompootuers
       )
     );
-    systems = lib.unique (builtins.filter (s: s != null) (map (sub: sub.system) computedCompootuers));
+    systems = lib.unique (map (sub: sub.system) computedCompootuers);
   };
 }
