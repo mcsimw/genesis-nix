@@ -101,8 +101,9 @@ let
 in
 {
   options.compootuers.path = lib.mkOption {
-    type = lib.types.path;
+    type = lib.types.nullOr lib.types.path;
     description = "Path to the directory containing system configurations.";
+    default = "null";
   };
   config = {
     flake.nixosConfigurations = builtins.listToAttrs (
@@ -128,6 +129,6 @@ in
         ) computedCompootuers
       )
     );
-    systems = lib.unique (map (sub: sub.system) computedCompootuers);
+    systems = lib.unique (builtins.filter (s: s != null) (map (sub: sub.system) computedCompootuers));
   };
 }
