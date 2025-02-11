@@ -31,7 +31,10 @@ let
       sub,
       iso ? false,
     }:
-    withSystem sub.system (
+    let
+      inherit (sub) system;
+    in
+    withSystem system (
       {
         config,
         inputs',
@@ -44,7 +47,7 @@ let
           [
             { 
               networking.hostName = sub.hostname; 
-              nixpkgs.pkgs = withSystem sub.system ({pkgs, ...}: pkgs);
+              nixpkgs.pkgs = withSystem system ({pkgs, ...}: pkgs);
             }
             flake.self.nixosModules.sane
             flake.self.nixosModules.nix-conf
@@ -130,6 +133,6 @@ in
         ) computedCompootuers
       )
     );
-    systems = lib.unique (builtins.filter (s: s != null) (map (sub: sub.system) computedCompootuers));
+    systems = lib.unique (builtins.filter (s: s != null) (map (sub: system) computedCompootuers));
   };
 }
