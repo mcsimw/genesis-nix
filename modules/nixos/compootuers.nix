@@ -74,13 +74,9 @@ let
             };
           }
         ] ++ lib.optional (src != null && builtins.pathExists "${src}/iso.nix") (import "${src}/iso.nix");
-        nonIsoModules =
-          [
-            flake.self.nixosModules.fakeFileSystems
-          ]
-          ++ lib.optional (src != null && builtins.pathExists "${src}/default.nix") (
-            import "${src}/default.nix"
-          );
+        nonIsoModules = lib.optional (src != null && builtins.pathExists "${src}/default.nix") (
+          import "${src}/default.nix"
+        );
       in
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
