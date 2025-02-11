@@ -103,7 +103,7 @@ in
   options.compootuers.path = lib.mkOption {
     type = lib.types.nullOr lib.types.path;
     description = "Path to the directory containing system configurations.";
-    default = "null";
+    default = null;
   };
   config = {
     flake.nixosConfigurations = builtins.listToAttrs (
