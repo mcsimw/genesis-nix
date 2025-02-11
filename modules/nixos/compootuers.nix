@@ -7,20 +7,23 @@
   ...
 }:
 let
-  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
-  compootuersPath = builtins.toString config.compootuers.path;
-  computedCompootuers = builtins.concatLists (
-    map (
-      system:
-      let
-        systemPath = "${compootuersPath}/${system}";
-        hostNames = builtins.attrNames (builtins.readDir systemPath);
-      in
-      map (hostname: {
-        inherit hostname system;
-        src = builtins.toPath "${systemPath}/${hostname}";
-      }) hostNames
-    ) (builtins.attrNames (builtins.readDir compootuersPath))
+  compootuersPath = mkIf (config.compootuers.path != null) (
+    builtins.toString config.compootuers.path
+  );
+  computedCompootuers = mkIf (compootuersPath != null && builtins.pathExists compootuersPath) (
+    builtins.concatLists (
+      map (
+        system:
+        let
+          systemPath = "${compootuersPath}/${system}";
+          hostNames = builtins.attrNames (builtins.readDir systemPath);
+        in
+        map (hostname: {
+          inherit hostname system;
+          src = builtins.toPath "${systemPath}/${hostname}";
+        }) hostNames
+      ) (builtins.attrNames (builtins.readDir compootuersPath))
+    )
   );
   configForSub =
     {
