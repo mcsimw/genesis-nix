@@ -19,9 +19,9 @@ let
           systemPath = "${compootuersPath}/${system}";
           hostNames = builtins.attrNames (builtins.readDir systemPath);
         in
-        map (hostname: {
-          inherit hostname system;
-          src = builtins.toPath "${systemPath}/${hostname}";
+        map (hostName: {
+          inherit hostName system;
+          src = builtins.toPath "${systemPath}/${hostName}";
         }) hostNames
       ) (builtins.attrNames (builtins.readDir compootuersPath))
     )
@@ -32,7 +32,7 @@ let
       iso ? false,
     }:
     let
-      inherit (sub) system hostname src;
+      inherit (sub) system src;
     in
     withSystem system (
       {
@@ -45,7 +45,7 @@ let
       let
         baseModules = [
           {
-            networking.hostName = hostname;
+            networking.hostName = hostName;
             nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
           }
           localFlake.nixosModules.sane
@@ -102,16 +102,16 @@ in
       builtins.concatLists (
         map (
           sub:
-          lib.optionals (sub.hostname != null) [
+          lib.optionals (hostName != null) [
             {
-              name = sub.hostname;
+              name = hostName;
               value = configForSub {
                 inherit sub;
                 iso = false;
               };
             }
             {
-              name = "${sub.hostname}-iso";
+              name = "${hostName}-iso";
               value = configForSub {
                 inherit sub;
                 iso = true;
