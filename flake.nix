@@ -47,7 +47,7 @@
             in
             {
               nixosModules = config.flake.lib.dirToAttrs ./modules/nixosModules;
-              compootuers = importApply ./compootuers.nix { flake = inputs; };
+              compootuers = importApply ./modules/compootuers.nix { flake = inputs; };
             };
         }
       );
