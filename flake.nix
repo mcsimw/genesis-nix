@@ -43,7 +43,7 @@
           ];
           flake = {
             nixosModules = config.flake.lib.dirToAttrs ./modules/nixosModules;
-            compootuers = lib.modules.importApply ./modules/compootuers.nix { lemon = inputs; };
+            compootuers = lib.modules.importApply ./modules/compootuers.nix { lemon = inputs; localFlake = self; };
           };
         }
       );
