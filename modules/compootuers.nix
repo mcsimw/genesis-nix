@@ -32,7 +32,7 @@ let
       iso ? false,
     }:
     let
-      inherit (sub) system src;
+      inherit (sub) system src hostName;
     in
     withSystem system (
       {
