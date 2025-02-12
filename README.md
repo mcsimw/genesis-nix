@@ -1,7 +1,6 @@
 # nix-genesis
 
-**nix-genesis** is a modular Nix flake for generating and managing reproducible NixOS configurations across multiple architectures. By leveraging [flake-parts](https://github.com/hercules-ci/flake-parts) for modularity and integrating formatting tools such as [treefmt-nix](https://github.com/numtide/treefmt-nix), this repository provides a streamlined workflow for creating and maintaining both system and ISO configurations.
-
+**nix-genesis** is kind of a modular Nix [flake-parts](https://github.com/hercules-ci/flake-parts) wrapper for generating and managing reproducible NixOS configurations across multiple architectures, with a streamlined workflow for creating and maintaining both system and ISO configurations and some other niceties.
 ---
 
 ## Overview
