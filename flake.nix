@@ -15,28 +15,44 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-      perSystem.treefmt = {
-        projectRootFile = "flake.nix";
-        programs = {
-          nixfmt.enable = true;
-          deadnix.enable = true;
-          statix.enable = true;
-          dos2unix.enable = true;
-        };
-      };
-      imports = [
-        inputs.treefmt-nix.flakeModule
-        ./modules
-      ];
-    }
+
+  outputs =
+    inputs:
+    let
+      baseFlake = inputs.flake-parts.lib.mkFlake { inherit inputs; } (
+        { lib, config, ... }:
+        {
+          systems = [
+            "x86_64-linux"
+            "aarch64-linux"
+            "x86_64-darwin"
+            "aarch64-darwin"
+          ];
+          perSystem.treefmt = {
+            projectRootFile = "flake.nix";
+            programs = {
+              nixfmt.enable = true;
+              deadnix.enable = true;
+              statix.enable = true;
+              dos2unix.enable = true;
+            };
+          };
+          imports = [
+            inputs.treefmt-nix.flakeModule
+            ./lib.nix
+          ];
+          flake =
+            let
+              inherit (inputs.flake-parts.lib) importApply;
+            in
+            {
+              nixosModules = config.flake.lib.dirToAttrs ./modules/nixosModules;
+              compootuers = importApply ./nixos/compootuers.nix { flake = inputs; };
+            };
+        }
+      );
+    in
+    baseFlake
     // {
       inherit (inputs.flake-parts.lib) mkFlake;
       fmt = inputs.treefmt-nix.flakeModule;
