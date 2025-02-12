@@ -191,6 +191,6 @@ To enable per-host configurations, set `config.compootuers.path` to a directory 
 This setup ensures a structured and scalable approach to managing multiple NixOS configurations.
 
 ## TODO:
-- ⭕ Add a dwarin module
-- ⭕ Add a module non linux distro computers 
-- ⭕ Get rid of flakes
+- ⭕ Add a dwarin module, don't have a mac yet, so unlikely to be done anytime soon!!
+- ⭕ Add a module for non linux distro computers
+- ⭕ Get rid of flakes, DREAMSSSS 😴💭🤤
