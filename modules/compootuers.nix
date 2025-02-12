@@ -45,7 +45,7 @@ let
       let
         baseModules = [
           {
-            networking.hostName = sub.hostname;
+            networking.hostName = hostname;
             nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
           }
           localFlake.nixosModules.sane

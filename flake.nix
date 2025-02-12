@@ -14,14 +14,7 @@
       repo = "treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    fakeself = {
-      type = "github";
-      owner = "mcsimw";
-      repo = "nix-genesis";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
-
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } (
