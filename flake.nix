@@ -39,15 +39,16 @@
           };
           imports = [
             inputs.treefmt-nix.flakeModule
+            inputs.self.inputs.compootuers
             ./lib.nix
           ];
           flake =
-            let
-              inherit (inputs.flake-parts.lib) importApply;
-            in
+            # let
+            #   inherit (inputs.flake-parts.lib) importApply;
+            # in
             {
               nixosModules = config.flake.lib.dirToAttrs ./modules/nixosModules;
-              compootuers = importApply ./modules/compootuers.nix { flake = inputs; };
+              compootuers = lib.modules.importApply ./modules/compootuers.nix { lemon = inputs; };
             };
         }
       );

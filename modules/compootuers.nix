@@ -1,4 +1,4 @@
-{ flake, ... }:
+{ lemon, ... }:
 {
   config,
   lib,
@@ -48,8 +48,8 @@ let
             networking.hostName = sub.hostname;
             nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
           }
-          flake.self.nixosModules.sane
-          flake.self.nixosModules.nix-conf
+          lemon.self.nixosModules.sane
+          lemon.self.nixosModules.nix-conf
         ] ++ lib.optional (src != null && builtins.pathExists "${src}/both.nix") (import "${src}/both.nix");
         isoModules = [
           {
