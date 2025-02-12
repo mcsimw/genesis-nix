@@ -148,7 +148,7 @@ This allows you to leverage helper functions from `nix-genesis` in your configur
 
 ## Formatting & Linting
 
-You can enable built-in formatting tools via **treefmt** without explicitly adding treefmt-nix to your flake inputs and then adding their module by including `inputs.nix-genesis.fmt` in your imports (done via alias as well 🥲. Many formatter are available, here are a few you will likely want to use:
+You can enable built-in formatting tools via **treefmt** without explicitly adding treefmt-nix to your flake inputs and then adding their module by including `inputs.nix-genesis.fmt` in your imports, done via alias as well 🥲. Many formatter are available, here are a few you will likely want to use:
 
 - `nixfmt` (for formatting Nix code)
 - `deadnix` (for removing unused code)
