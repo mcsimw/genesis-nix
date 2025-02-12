@@ -19,8 +19,7 @@ Together, these modules help you maintain reproducible, secure, and easy-to-cust
 ## Repository Structure
 
 ```
-.
-├── flake.lock            # Lock file ensuring reproducible builds
+├── flake.lock            # Ignored by git, does not exist🙂, don't worry about it 🙂 
 ├── flake.nix             # Main flake file integrating modules and outputs
 ├── lib.nix               # Utility functions used across the flake
 ├── LICENSE               # License file
@@ -124,6 +123,10 @@ To use nix-genesis in your own flake, reference it in your `flake.nix`:
 }
 ```
 
+### WTF is inputs.nix-genesis.mkFlake ?
+It is an alias to `inputs.nix-genesis.inputs.flake-parts.lib.mkFlake`, it is to avoid having to type that all out or alternativly adding  flake-parts to your flake inputs  and typing out `inputs.flake-parts.lib.mkFlake`, flake bullshit 😁, or my bullshit 😁.
+
+
 ### Using the Library Module
 
 You can use the `lib.nix` utilities in your NixOS configurations by adding:
@@ -138,7 +141,7 @@ This allows you to leverage helper functions from `nix-genesis` in your configur
 
 ## Formatting & Linting
 
-You can enable built-in formatting tools via **treefmt** without explicitly adding it to your flake inputs by including `inputs.nix-genesis.fmt` in your imports. Many formatter are available, here are a few you will likely want to use:
+You can enable built-in formatting tools via **treefmt** without explicitly adding treefmt-nix to your flake inputs and then adding their module by including `inputs.nix-genesis.fmt` in your imports (done via alias as well 🥲. Many formatter are available, here are a few you will likely want to use:
 
 - `nixfmt` (for formatting Nix code)
 - `deadnix` (for removing unused code)
