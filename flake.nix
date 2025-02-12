@@ -20,7 +20,7 @@
     inputs:
     let
       baseFlake = inputs.flake-parts.lib.mkFlake { inherit inputs; } (
-        { lib, config, ... }:
+        { lib, config, self, ... }:
         {
           systems = [
             "x86_64-linux"
