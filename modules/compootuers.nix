@@ -101,8 +101,8 @@ in
     flake.nixosConfigurations = builtins.listToAttrs (
       builtins.concatLists (
         map (
-          { hostName, ... }:
           sub:
+          let hostName = sub.hostName; in
           lib.optionals (hostName != null) [
             {
               name = hostName;
