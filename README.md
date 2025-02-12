@@ -123,7 +123,7 @@ To use nix-genesis in your own flake, reference it in your `flake.nix`:
 }
 ```
 
-### WTF is inputs.nix-genesis.mkFlake ?
+### WTF is inputs.nix-genesis.mkFlake?
 It is an alias to `inputs.nix-genesis.inputs.flake-parts.lib.mkFlake`, it is to avoid having to type that all out or alternativly adding  flake-parts to your flake inputs and typing out `inputs.flake-parts.lib.mkFlake`, flake bullshit 😁, or my bullshit 😁.
 
 
