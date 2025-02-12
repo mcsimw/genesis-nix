@@ -20,7 +20,12 @@
     inputs:
     let
       baseFlake = inputs.flake-parts.lib.mkFlake { inherit inputs; } (
-        { lib, config, self, ... }:
+        {
+          lib,
+          config,
+          self,
+          ...
+        }:
         {
           systems = [
             "x86_64-linux"
@@ -43,7 +48,7 @@
           ];
           flake = {
             nixosModules = config.flake.lib.dirToAttrs ./modules/nixosModules;
-            compootuers = lib.modules.importApply ./modules/compootuers.nix { lemon = inputs; localFlake = self; };
+            compootuers = lib.modules.importApply ./modules/compootuers.nix { localFlake = self; };
           };
         }
       );
