@@ -101,6 +101,7 @@ in
     flake.nixosConfigurations = builtins.listToAttrs (
       builtins.concatLists (
         map (
+          { hostName, ... }:
           sub:
           lib.optionals (hostName != null) [
             {
