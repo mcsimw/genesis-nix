@@ -42,8 +42,8 @@ The `sane.nix` module applies essential configurations that improve reliability 
 
 - **Networking:**
 
-  - Uses `systemd-networkd` for predictable networking behavior.
-  - Ensures DHCP is enabled by default.
+  - Uses `systemd-networkd` by default because it is better.
+  - Enables  DHCP is enabled by default.
   - Generates a stable `hostId` based on the hostname for ZFS consistency.
 
 - **Hardware & Services:**
@@ -55,11 +55,11 @@ The `sane.nix` module applies essential configurations that improve reliability 
 - **User & Program Settings:**
 
   - Disables mutable user accounts by default.
-  - Enables essential programs such as `direnv`, `vim` (default editor), and `git` with LFS support.
+  - Enables essential programs such as `direnv`, `vim` (default editor), and `git` with LFS support by default are enabled.
 
 - **Boot & Documentation:**
 
-  - Enables `initrd.systemd` for improved init system integration.
+  - Enables `initrd.systemd` by defalut  because it is better. 
   - Ensures essential system documentation is available while keeping unnecessary docs disabled.
 
 ### nix-conf.nix
@@ -167,7 +167,7 @@ nix fmt
 
 ---
 
-## Host Configuration Directory Hierarchy
+## Host Configuration Directory Hierarchy for compootuers module
 
 To enable per-host configurations, set `config.compootuers.path` to a directory containing host configuration files, structured as follows:
 
@@ -190,4 +190,7 @@ To enable per-host configurations, set `config.compootuers.path` to a directory 
 
 This setup ensures a structured and scalable approach to managing multiple NixOS configurations.
 
-
+## Future Plans
+- [x] Add a dwarin module
+- [x] Add a module non linux distro computers 
+- [x] Get rid of flakes
