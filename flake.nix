@@ -39,7 +39,6 @@
           };
           imports = [
             inputs.treefmt-nix.flakeModule
-            inputs.self.inputs.compootuers
             ./lib.nix
           ];
           flake =
