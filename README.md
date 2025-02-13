@@ -1,13 +1,11 @@
 # nix-genesis
 
-
 > [!WARNING]
 > This is really only made to be used by me, likely it will go through a lot of
 > breaking changes so I do not recommend you use it on your own system. If you
 > do like it though, consider forking it or using it as inspiration.
 
-
-**nix-genesis** is essentially a [flake-parts](https://github.com/hercules-ci/flake-parts) wrapper for generating and managing reproducible NixOS configurations across multiple architectures, with a streamlined workflow for creating and maintaining both system and ISO configurations and some other niceties.
+**nix-genesis** is essentially a set of nixosModules and [flake-parts](https://github.com/hercules-ci/flake-parts) modules for generating and managing reproducible NixOS configurations across multiple architectures, with a streamlined workflow for creating and maintaining both system and ISO configurations and some other niceties.
 
 ---
 
@@ -15,36 +13,19 @@
 
 nix-genesis is designed to generate host-specific NixOS configurations with a clear separation of concerns:
 
-- **Host Configuration:** Uses the `compootuers` module to automatically detect and build configurations for multiple hosts based on a prescribed directory structure.
-- **System Defaults:** The `sane.nix` module provides a set of carefully selected defaults for networking, hardware, services, programs, and boot options to ensure a stable and predictable system.
-- **Nix Configuration:** The `nix-conf.nix` module refines the Nix package manager environment, pinning flake inputs, defining registry behavior, and enabling crucial experimental features.
+- **Host Configuration:** Uses the `flakeModules.compootuers` module to automatically detect and build configurations for multiple hosts based on a prescribed directory structure.
+- **System Defaults:** The `nixosModules.sane` module provides a set of carefully selected defaults for networking, hardware, services, programs, and boot options to ensure a stable and predictable system.
+- **Nix Configuration:** The `nixosModules.nix-conf` module refines the Nix package manager environment, pinning flake inputs, defining registry behavior, and enabling crucial experimental features.
 
 Together, these modules help you maintain reproducible, secure, and easy-to-customize configurations for your systems.
 
 ---
 
-## Repository Structure
+## nixosModules Details
 
-```
-├── flake.lock            # Ignored by git, does not exist 🙂, don't worry about it 🙂 
-├── flake.nix             # Main flake file integrating modules and outputs
-├── lib.nix               # Utility functions used across the flake
-├── LICENSE               # License file
-├── .gitignore            # Git ignore rules
-└── modules
-    ├── compootuers.nix   # Module for host-specific configurations
-    └── nixosModules
-         ├── nix-conf.nix  # Nix configuration module (nix-conf)
-         └── sane.nix      # Default configuration module (sane)
-```
+### nixosModules.sane
 
----
-
-## Module Details
-
-### sane.nix
-
-The `sane.nix` module applies essential configurations that improve reliability and security:
+applies essential configurations that improve reliability and security:
 
 - **Networking:**
 
@@ -68,7 +49,7 @@ The `sane.nix` module applies essential configurations that improve reliability 
   - Enables `initrd.systemd` by defalut  because it is better. 
   - Ensures essential system documentation is available while keeping unnecessary docs disabled.
 
-### nix-conf.nix
+### nixosModules.nix-conf
 
 The `nix-conf.nix` module customizes the behavior of the Nix package manager:
 
@@ -84,29 +65,23 @@ The `nix-conf.nix` module customizes the behavior of the Nix package manager:
 
 ---
 
-## Using nix-genesis in Your Configuration
+> [!WARNING]
+> You could use these modules standalone but they are meant to integrate with
+> the flakeModules.compootuers module. Do not import these modules in any of 
+> your configurations inside the compootuers.path, as they are already imported
+> by default for all the individual computer configurations in there!!
 
-To use nix-genesis in your own flake, reference it in your `flake.nix`:
+## Using nix-genesis in Your Configuration
 
 ```nix
 {
-  description = "";
+  description = "yay";
   outputs =
     inputs:
-    inputs.nix-genesis.mkFlake { inherit inputs; } {
-      perSystem.treefmt = {
-        projectRootFile = "flake.nix";
-        programs = {
-          nixfmt.enable = true;
-          deadnix.enable = true;
-          statix.enable = true;
-          dos2unix.enable = true;
-        };
-      };
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       compootuers.path = ./compootuers;
       imports = with inputs; [
-        nix-genesis.flakeModules.compootuers
-        nix-genesis.flakeModules.fmt
+        nix-genesis.flakeModules.compootuers # This is for now the only flake-parts module available for now
       ];
     };
   inputs = {
@@ -124,16 +99,17 @@ To use nix-genesis in your own flake, reference it in your `flake.nix`:
       type = "github";
       owner = "mcsimw";
       repo = "nix-genesis";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs"; # do this
+    };
+    nix = {
+      type = "github";
+      owner = "hercules-ci";
+      repo = "flake-parts";
+      inputs.nixpkgs.follows = "nixpkgs" # optional, will clean up flake.lock
     };
   };
 }
 ```
-
-### WTF is inputs.nix-genesis.mkFlake?
-It is an alias to `inputs.nix-genesis.inputs.flake-parts.lib.mkFlake`, it is to avoid having to type that all out or alternativly adding  flake-parts to your flake inputs and typing out `inputs.flake-parts.lib.mkFlake`, flake bullshit 😁, or my bullshit 😁.
-
-
 ### Using the Library Module
 
 You can use the `lib.nix` utilities in your NixOS configurations by adding:
@@ -143,37 +119,6 @@ imports = [ "${inputs.nix-genesis.outPath}/lib.nix" ];
 ```
 
 This allows you to leverage helper functions from `nix-genesis` in your configurations.
-
----
-
-## Formatting & Linting
-
-You can enable built-in formatting tools via **treefmt** without explicitly adding treefmt-nix to your flake inputs and then adding their module by including `inputs.nix-genesis.fmt` in your imports, done via alias as well 🥲. Many formatter are available, here are a few you will likely want to use:
-
-- `nixfmt` (for formatting Nix code)
-- `deadnix` (for removing unused code)
-- `statix` (for static analysis)
-- `dos2unix` (for normalizing line endings)
-
-You can set up `treefmt` by adding:
-
-```nix
-perSystem.treefmt = {
-  projectRootFile = "flake.nix";
-  programs = {
-    nixfmt.enable = true;
-    deadnix.enable = true;
-    statix.enable = true;
-    dos2unix.enable = true;
-  };
-};
-```
-
-And run the formatter with:
-
-```bash
-nix fmt
-```
 
 ---
 
@@ -201,6 +146,6 @@ To enable per-host configurations, set `config.compootuers.path` to a directory 
 This setup ensures a structured and scalable approach to managing multiple NixOS configurations.
 
 ## TODO:
-- ⭕ Add a dwarin module, don't have a mac yet, so unlikely to be done anytime soon!!
-- ⭕ Add a module for non linux distro computers
+- ⭕ Add a dwarin module to flakeModules, don't have a mac yet, so unlikely to be done anytime soon!!
+- ⭕ Add a module for non linux distro computers to flakeModules
 - ⭕ Get rid of flakes, DREAMSSSS 😴💭🤤
