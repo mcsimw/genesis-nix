@@ -45,13 +45,11 @@
           ./lib.nix
         ];
         flake = {
-          nixosModules = config.flake.lib.dirToAttrs ./modules/nixosModules;
-          compootuers = lib.modules.importApply ./modules/compootuers.nix { localFlake = self; };
+          nixosModules = self.lib.dirToAttrs ./modules/nixosModules;
+          flakeModules.compootuers = lib.modules.importApply ./modules/flakeModules/compootuers.nix {
+            localFlake = self;
+          };
         };
       }
-    )
-    // {
-      inherit (inputs.flake-parts.lib) mkFlake;
-      fmt = inputs.treefmt-nix.flakeModule;
-    };
+    );
 }

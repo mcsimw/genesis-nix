@@ -102,7 +102,9 @@ in
       builtins.concatLists (
         map (
           sub:
-          let hostName = sub.hostName; in
+          let
+            inherit (sub) hostName;
+          in
           lib.optionals (hostName != null) [
             {
               name = hostName;

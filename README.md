@@ -105,8 +105,8 @@ To use nix-genesis in your own flake, reference it in your `flake.nix`:
       };
       compootuers.path = ./compootuers;
       imports = with inputs; [
-        nix-genesis.compootuers
-        nix-genesis.fmt
+        nix-genesis.flakeModules.compootuers
+        nix-genesis.flakeModules.fmt
       ];
     };
   inputs = {
