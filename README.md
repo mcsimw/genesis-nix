@@ -101,7 +101,7 @@ The `nix-conf.nix` module customizes the behavior of the Nix package manager:
       repo = "nix-genesis";
       inputs.nixpkgs.follows = "nixpkgs"; # do this
     };
-    nix = {
+    flake-parts = {
       type = "github";
       owner = "hercules-ci";
       repo = "flake-parts";
