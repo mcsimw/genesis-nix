@@ -99,13 +99,16 @@ The `nix-conf.nix` module customizes the behavior of the Nix package manager:
       type = "github";
       owner = "mcsimw";
       repo = "nix-genesis";
-      inputs.nixpkgs.follows = "nixpkgs"; # do this
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts = "flake-parts";
+      };
     };
     flake-parts = {
       type = "github";
       owner = "hercules-ci";
       repo = "flake-parts";
-      inputs.nixpkgs.follows = "nixpkgs" # optional, will clean up flake.lock
+      inputs.nixpkgs-lib.follows = "nixpkgs"; 
     };
   };
 }
@@ -148,8 +151,6 @@ This setup ensures a structured and scalable approach to managing multiple NixOS
 ## TODO:
 ⭕ Add a dwarin module to flakeModules, don't have a mac yet, so unlikely to be done anytime soon!!
 
-
 ⭕ Add a module for non linux distro computers to flakeModules
-
 
 ⭕ Get rid of flakes, DREAMSSSS 😴💭🤤
