@@ -8,6 +8,7 @@
     );
   };
   hardware.graphics.enable32Bit = lib.mkDefault true;
+  xdg.portal.xdgOpenUsePortal = lib.mkDefault false;
   users.mutableUsers = lib.mkDefault false;
   security = {
     polkit.enable = lib.mkForce true;
