@@ -4,7 +4,6 @@
   lib,
   inputs,
   withSystem,
-  self,
   ...
 }:
 let
@@ -87,7 +86,6 @@ let
             inputs
             inputs'
             self'
-            self
             system
             ;
         };
