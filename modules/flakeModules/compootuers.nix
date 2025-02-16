@@ -5,10 +5,11 @@
   inputs,
   withSystem,
   self,
+  modulesPath,
   ...
 }:
 let
-  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
+#  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
   compootuersPath = lib.optionalString (config.compootuers.path != null) (
     builtins.toString config.compootuers.path
   );
