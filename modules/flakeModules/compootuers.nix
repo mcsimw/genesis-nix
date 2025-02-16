@@ -85,6 +85,7 @@ let
             inputs
             inputs'
             self'
+            self
             system
             ;
         };
