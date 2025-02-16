@@ -3,15 +3,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
     flake-parts = {
-      type = "github";
-      owner = "hercules-ci";
-      repo = "flake-parts";
+      url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     treefmt-nix = {
-      type = "github";
-      owner = "numtide";
-      repo = "treefmt-nix";
+      url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

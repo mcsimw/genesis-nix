@@ -48,6 +48,7 @@ let
           {
             networking.hostName = hostName;
             nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
+            environment.sessionVariables.NIXPKGS_ALLOW_UNFREE = "1";
           }
           localFlake.nixosModules.sane
           localFlake.nixosModules.nix-conf
