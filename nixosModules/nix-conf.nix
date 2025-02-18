@@ -22,7 +22,6 @@
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     system.rebuild.enableNg = true;
     nix = {
-      #  package = lib.mkDefault pkgs.nixVersions.latest;
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
       );
@@ -48,7 +47,7 @@
         sandbox = true;
         http-connections = 0;
         max-substitution-jobs = 128;
-        download-buffer-size = 134217728;
+        download-buffer-size = 0;
         extra-experimental-features = [
           "nix-command"
           "flakes"
