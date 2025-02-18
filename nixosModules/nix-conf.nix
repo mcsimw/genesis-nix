@@ -47,7 +47,6 @@
         sandbox = true;
         http-connections = 0;
         max-substitution-jobs = 128;
-        download-buffer-size = 0;
         extra-experimental-features = [
           "nix-command"
           "flakes"
