@@ -1,7 +1,6 @@
 {
   lib,
   config,
-  pkgs,
   inputs ? throw "Pass inputs to specialArgs or extraSpecialArgs",
   ...
 }:
@@ -23,7 +22,7 @@
     environment.variables.NIXPKGS_CONFIG = lib.mkForce "";
     system.rebuild.enableNg = true;
     nix = {
-      package = lib.mkDefault pkgs.nixVersions.latest;
+      #  package = lib.mkDefault pkgs.nixVersions.latest;
       registry = lib.listToAttrs (
         map (name: lib.nameValuePair name { flake = inputs.${name}; }) config.nix.inputsToPin
       );

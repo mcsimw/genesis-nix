@@ -2,7 +2,6 @@
 {
   networking = {
     useDHCP = lib.mkDefault true;
-    useNetworkd = lib.mkDefault true;
     hostId = lib.mkForce (
       builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
     );
@@ -80,7 +79,7 @@
       even in ephemeral boot scenarios (e.g., when using a tmpfs root filesystem), minimizing
       the risk of import failures unless intentional reconfiguration occurs.
 
-      If you generated the installation ISO using nix-genesis's compootuers module
+      If you generated the installation ISO using nix-genesis's compootuers flakeModule
       and plan to use it for your actual system, the hostId is automatically derived
       from your hostname, ensuring consistency between the installer and the installed system.
       This significantly reduces the likelihood of encountering this issue. However, for this
