@@ -14,19 +14,20 @@
     rtkit.enable = lib.mkForce config.services.pipewire.enable;
   };
   services = {
+    userborn.enable = lib.mkDefault true;
     fstrim.enable = lib.mkForce true;
     pulseaudio.enable = lib.mkForce false;
     earlyoom.enable = lib.mkForce true;
     udisks2.enable = lib.mkForce true;
     dbus.implementation = lib.mkForce "broker";
     zfs = lib.mkIf config.boot.zfs.enabled {
-      autoScrub = lib.mkForce {
-        enable = true;
-        interval = "daily";
+      autoScrub = {
+        enable = lib.mkDefault true;
+        interval = lib.mkDefault "daily";
       };
-      trim = lib.mkForce {
-        enable = true;
-        interval = "daily";
+      trim =  {
+        enable = lib.mkDefault true;
+        interval = lib.mkDefault "daily";
       };
     };
   };
