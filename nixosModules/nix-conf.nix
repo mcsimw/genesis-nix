@@ -37,7 +37,7 @@
         keep-derivations = true;
         keep-outputs = true;
         accept-flake-config = false;
-        allow-import-from-derivation = true;
+        allow-import-from-derivation = false;
         builders-use-substitutes = true;
         use-xdg-base-directories = true;
         use-cgroups = true;
