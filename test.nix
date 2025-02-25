@@ -13,26 +13,24 @@ let
     builtins.toString config.compootuers.path
   );
   computedCompootuers = lib.optionals (compootuersPath != "") (
+    let
+      outerDir = builtins.readDir compootuersPath;
+      systems = builtins.filter (system: outerDir[system].type == "directory")
+        (builtins.attrNames outerDir);
+    in
     builtins.concatLists (
-      map
-        (
-          system:
-          let
-            systemPath = "${compootuersPath}/${system}";
-            hostDirs = builtins.filter (
-              hostName: (builtins.readDir systemPath) [ hostName ].type == "directory"
-            ) (builtins.attrNames (builtins.readDir systemPath));
-          in
+      map (system:
+        let
+          systemPath = "${compootuersPath}/${system}";
+          systemDir = builtins.readDir systemPath;
+          hostDirs = builtins.filter (hostName: systemDir[hostName].type == "directory")
+            (builtins.attrNames systemDir);
+        in
           map (hostName: {
             inherit hostName system;
             src = builtins.toPath "${systemPath}/${hostName}";
           }) hostDirs
-        )
-        (
-          builtins.filter (system: (builtins.readDir compootuersPath) [ system ].type == "directory") (
-            builtins.attrNames (builtins.readDir compootuersPath)
-          )
-        )
+      ) systems
     )
   );
   configForSub =
@@ -91,8 +89,7 @@ let
             inputs'
             self'
             self
-            system
-            ;
+            system;
         };
         modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       }
@@ -106,8 +103,7 @@ in
   config = {
     flake.nixosConfigurations = builtins.listToAttrs (
       builtins.concatLists (
-        map (
-          sub:
+        map (sub:
           let
             inherit (sub) hostName;
           in
