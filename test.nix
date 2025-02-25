@@ -53,16 +53,14 @@ let
         ...
       }:
       let
-        baseModules =
-          [
-            {
-              networking.hostName = hostName;
-              nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
-            }
-            localFlake.nixosModules.sane
-            localFlake.nixosModules.nix-conf
-          ]
-          ++ lib.optional (src != null && builtins.pathExists "${src}/both.nix") (import "${src}/both.nix");
+        baseModules = [
+          {
+            networking.hostName = hostName;
+            nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
+          }
+          localFlake.nixosModules.sane
+          localFlake.nixosModules.nix-conf
+        ] ++ lib.optional (src != null && builtins.pathExists "${src}/both.nix") (import "${src}/both.nix");
         isoModules = [
           {
             imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
