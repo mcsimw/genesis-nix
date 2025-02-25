@@ -31,7 +31,7 @@
         ];
         flake = {
           nixosModules = config.flake.lib.dirToAttrs ./nixosModules;
-          flakeModules.compootuers = lib.modules.importApply ./test.nix {
+          flakeModules.compootuers = lib.modules.importApply ./flakeModules/compootuers.nix {
             localFlake = self;
           };
         };
