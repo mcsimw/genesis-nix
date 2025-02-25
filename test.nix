@@ -23,17 +23,22 @@ let
   ) (import "${compootuersPath}/iso.nix");
   computedCompootuers = lib.optionals (compootuersPath != "") (
     builtins.concatLists (
-      map (
-        system:
+      map (system:
         let
           systemPath = "${compootuersPath}/${system}";
-          hostNames = builtins.attrNames (builtins.readDir systemPath);
+          hostNames = builtins.attrNames (
+            builtins.filterAttrs (name: value: value.isDir)
+              (builtins.readDir systemPath)
+          );
         in
         map (hostName: {
           inherit hostName system;
           src = builtins.toPath "${systemPath}/${hostName}";
         }) hostNames
-      ) (builtins.attrNames (builtins.readDir compootuersPath))
+      ) (builtins.attrNames (
+        builtins.filterAttrs (name: value: value.isDir)
+          (builtins.readDir compootuersPath)
+      ))
     )
   );
   configForSub =
@@ -94,8 +99,7 @@ let
             inputs'
             self'
             self
-            system
-            ;
+            system;
         };
         modules =
           baseModules
