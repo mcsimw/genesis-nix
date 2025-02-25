@@ -7,18 +7,18 @@ let
   computedCompootuers = lib.optionals (compootuersPath != "") (
     let
       outerDir = builtins.readDir compootuersPath;
-      systems = builtins.filter
-        (system: outerDir[system] == "directory")
-        (builtins.attrNames outerDir);
+      systems = builtins.filter (system:
+        builtins.head (builtins.attrValues (outerDir[system])) == "directory"
+      ) (builtins.attrNames outerDir);
     in
     builtins.concatLists (
       map (system:
         let
           systemPath = "${compootuersPath}/${system}";
           systemDir = builtins.readDir systemPath;
-          hostDirs = builtins.filter
-            (host: systemDir[host] == "directory")
-            (builtins.attrNames systemDir);
+          hostDirs = builtins.filter (host:
+            builtins.head (builtins.attrValues (systemDir[host])) == "directory"
+          ) (builtins.attrNames systemDir);
         in
           map (host: {
             hostName = host;
