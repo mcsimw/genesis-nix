@@ -8,7 +8,7 @@ let
     let
       outerDir = builtins.readDir compootuersPath;
       systems = builtins.filter
-        (system: (builtins.getAttr system outerDir).type == "directory")
+        (system: outerDir[system] == "directory")
         (builtins.attrNames outerDir);
     in
     builtins.concatLists (
@@ -17,13 +17,14 @@ let
           systemPath = "${compootuersPath}/${system}";
           systemDir = builtins.readDir systemPath;
           hostDirs = builtins.filter
-            (hostName: (builtins.getAttr hostName systemDir).type == "directory")
+            (host: systemDir[host] == "directory")
             (builtins.attrNames systemDir);
         in
-        map (hostName: {
-          inherit hostName system;
-          src = builtins.toPath "${systemPath}/${hostName}";
-        }) hostDirs
+          map (host: {
+            hostName = host;
+            system = system;
+            src = builtins.toPath "${systemPath}/${host}";
+          }) hostDirs
       ) systems
     )
   );
@@ -41,7 +42,7 @@ let
           localFlake.nixosModules.nix-conf
         ]
         ++ lib.optional (src != null && builtins.pathExists "${src}/both.nix")
-           (import "${src}/both.nix");
+             (import "${src}/both.nix");
       isoModules =
         [ {
             imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
@@ -62,9 +63,9 @@ let
           }
         ]
         ++ lib.optional (src != null && builtins.pathExists "${src}/iso.nix")
-           (import "${src}/iso.nix");
+             (import "${src}/iso.nix");
       nonIsoModules = lib.optional (src != null && builtins.pathExists "${src}/default.nix")
-           (import "${src}/default.nix");
+             (import "${src}/default.nix");
     in
     inputs.nixpkgs.lib.nixosSystem {
       specialArgs = {
@@ -86,16 +87,15 @@ in {
       builtins.concatLists (
         map (sub:
           let
-            inherit (sub) hostName;
-          in
-          lib.optional (hostName != null)
+            hostName = sub.hostName;
+          in lib.optional (hostName != null)
             [ {
                 name = hostName;
-                value = configForSub { inherit sub; iso = false; };
+                value = configForSub { sub = sub; iso = false; };
               }
               {
                 name = "${hostName}-iso";
-                value = configForSub { inherit sub; iso = true; };
+                value = configForSub { sub = sub; iso = true; };
               }
             ]
         ) computedCompootuers
@@ -103,7 +103,7 @@ in {
     );
     systems = lib.unique (
       builtins.filter (s: s != null)
-        (map ({ system, ... }: system) computedCompootuers)
+        (map (s: s.system) computedCompootuers)
     );
   };
 }
