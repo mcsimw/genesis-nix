@@ -25,7 +25,7 @@
         enable = lib.mkDefault true;
         interval = lib.mkDefault "daily";
       };
-      trim =  {
+      trim = {
         enable = lib.mkDefault true;
         interval = lib.mkDefault "daily";
       };
