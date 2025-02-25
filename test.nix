@@ -9,22 +9,21 @@
 }:
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
-  compootuersPath = lib.optionalString (config.compootuers.path != null) (
-    builtins.toString config.compootuers.path
-  );
+  compootuersPath = lib.optionalString (config.compootuers.path != null)
+    (builtins.toString config.compootuers.path);
   computedCompootuers = lib.optionals (compootuersPath != "") (
     let
-      outerNames = builtins.attrNames (builtins.readDir compootuersPath);
-      systems = builtins.filter (system: (builtins.pathInfo "${compootuersPath}/${system}").isDirectory)
-        outerNames;
+      outerDir = builtins.readDir compootuersPath;
+      systems = builtins.filter (system: outerDir[system] == "directory")
+        (builtins.attrNames outerDir);
     in
     builtins.concatLists (
       map (system:
         let
           systemPath = "${compootuersPath}/${system}";
-          hostNames = builtins.attrNames (builtins.readDir systemPath);
-          hostDirs = builtins.filter (hostName: (builtins.pathInfo "${systemPath}/${hostName}").isDirectory)
-            hostNames;
+          systemDir = builtins.readDir systemPath;
+          hostDirs = builtins.filter (hostName: systemDir[hostName] == "directory")
+            (builtins.attrNames systemDir);
         in
           map (hostName: {
             inherit hostName system;
@@ -34,10 +33,7 @@ let
     )
   );
   configForSub =
-    {
-      sub,
-      iso ? false,
-    }:
+    { sub, iso ? false, }:
     let
       inherit (sub) system src hostName;
     in
@@ -51,7 +47,8 @@ let
           }
           localFlake.nixosModules.sane
           localFlake.nixosModules.nix-conf
-        ] ++ lib.optional (src != null && builtins.pathExists "${src}/both.nix")
+        ]
+        ++ lib.optional (src != null && builtins.pathExists "${src}/both.nix")
              (import "${src}/both.nix");
         isoModules = [
           {
@@ -71,7 +68,8 @@ let
               hashedPassword = null;
             };
           }
-        ] ++ lib.optional (src != null && builtins.pathExists "${src}/iso.nix")
+        ]
+        ++ lib.optional (src != null && builtins.pathExists "${src}/iso.nix")
              (import "${src}/iso.nix");
         nonIsoModules = lib.optional (src != null && builtins.pathExists "${src}/default.nix")
              (import "${src}/default.nix");
@@ -81,7 +79,9 @@ let
           inherit (config) packages;
           inherit inputs inputs' self' self system;
         };
-        modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
+        modules = baseModules
+          ++ lib.optionals iso isoModules
+          ++ lib.optionals (!iso) nonIsoModules;
       }
     );
 in
