@@ -21,42 +21,35 @@ let
   globalIso = lib.optional (
     compootuersPath != "" && builtins.pathExists "${compootuersPath}/iso.nix"
   ) (import "${compootuersPath}/iso.nix");
+
   computedCompootuers = lib.optionals (compootuersPath != "") (
-    builtins.concatLists (
+    let
+      compootuersDir = builtins.readDir compootuersPath;
+      systems = builtins.filter (system: compootuersDir.${system}.isDir)
+                (builtins.attrNames compootuersDir);
+    in builtins.concatLists (
       map (system:
         let
           systemPath = "${compootuersPath}/${system}";
-          hostNames = builtins.attrNames (
-            builtins.filterAttrs (name: value: value.isDir)
-              (builtins.readDir systemPath)
-          );
+          systemDir = builtins.readDir systemPath;
+          hostNames = builtins.filter (host: systemDir.${host}.isDir)
+                     (builtins.attrNames systemDir);
         in
         map (hostName: {
           inherit hostName system;
           src = builtins.toPath "${systemPath}/${hostName}";
         }) hostNames
-      ) (builtins.attrNames (
-        builtins.filterAttrs (name: value: value.isDir)
-          (builtins.readDir compootuersPath)
-      ))
+      ) systems
     )
   );
+
   configForSub =
-    {
-      sub,
-      iso ? false,
-    }:
+    { sub, iso ? false, }:
     let
       inherit (sub) system src hostName;
     in
     withSystem system (
-      {
-        config,
-        inputs',
-        self',
-        system,
-        ...
-      }:
+      { config, inputs', self', system, ... }:
       let
         baseModules = [
           {
@@ -94,12 +87,7 @@ let
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit (config) packages;
-          inherit
-            inputs
-            inputs'
-            self'
-            self
-            system;
+          inherit inputs inputs' self' self system;
         };
         modules =
           baseModules
@@ -127,17 +115,11 @@ in
           lib.optionals (hostName != null) [
             {
               name = hostName;
-              value = configForSub {
-                inherit sub;
-                iso = false;
-              };
+              value = configForSub { inherit sub; iso = false; };
             }
             {
               name = "${hostName}-iso";
-              value = configForSub {
-                inherit sub;
-                iso = true;
-              };
+              value = configForSub { inherit sub; iso = true; };
             }
           ]
         ) computedCompootuers
