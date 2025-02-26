@@ -118,20 +118,10 @@ in
     perSystem = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
-      description = ''
-        If set, this path must contain subdirectories named after each "system",
-        which contain subdirectories named after each "host".
-        E.g. `$perSystem/x86_64-linux/myhost/default.nix`.
-      '';
     };
     allSystems = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
-      description = ''
-        If set, this path can contain `both.nix`, `default.nix`, and/or `iso.nix`
-        which are applied to all systems/hosts (but only if "perSystem" actually
-        has at least one valid host).
-      '';
     };
   };
   config = {
