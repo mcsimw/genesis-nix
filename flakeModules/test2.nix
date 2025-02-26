@@ -20,8 +20,8 @@ let
   hasAllSystems = allSystemsPath != null && builtins.pathExists allSystemsPath;
   computedCompootuers = builtins.concatLists (
     lib.optionals hasPerSystem [
-      builtins.concatLists
-      (map (
+      builtins.concatMap
+      (
         system:
         let
           systemPath = "${perSystemPath}/${system}";
@@ -31,7 +31,8 @@ let
           inherit hostName system;
           src = builtins.toPath "${systemPath}/${hostName}";
         }) hostNames
-      ) (builtins.attrNames (builtins.readDir perSystemPath)))
+      )
+      (builtins.attrNames (builtins.readDir perSystemPath))
     ]
   );
   hasHosts = (builtins.length computedCompootuers) > 0;
