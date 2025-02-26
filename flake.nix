@@ -34,7 +34,7 @@
           flakeModules.old = lib.modules.importApply ./flakeModules/compootuers.nix {
             localFlake = self;
           };
-          flakeModules.compootuers = lib.modules.importApply ./flakeModules/test.nix {
+          flakeModules.compootuers = lib.modules.importApply ./flakeModules/test1.nix {
             localFlake = self;
           };
         };
