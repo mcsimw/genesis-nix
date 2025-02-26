@@ -93,7 +93,6 @@ let
           ]
           ++ lib.optional (globalIsoFile != null) globalIsoFile
           ++ lib.optional (srcIsoFile != null) srcIsoFile;
-
         nonIsoModules =
           lib.optional (globalDefaultFile != null) globalDefaultFile
           ++ lib.optional (srcDefaultFile != null) srcDefaultFile;
@@ -122,15 +121,15 @@ in
       default = null;
       description = ''
         Path with subdirectories for each system, each containing subdirectories
-        for each host. e.g. ${perSystem}/x86_64-linux/myhost/default.nix
+        for each host. For example: /my/hosts/x86_64-linux/myhost/default.nix
       '';
     };
     allSystems = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
       description = ''
-        Path to a directory that might contain both.nix, default.nix, or iso.nix
-        that get applied to all discovered systems & hosts (only if any exist).
+        Path that may contain both.nix, default.nix, or iso.nix to be applied
+        to all discovered systems/hosts, if any exist in perSystem.
       '';
     };
   };
