@@ -16,8 +16,20 @@ let
     builtins.toString config.compootuers.path
   );
 
-  # Helper: check if a path exists
+  # Helper: check if a path/directory exists
   pathExists = builtins.pathExists or (_p: false);
+
+  # Returns true if `path` is a regular file (not a directory, symlink, etc.)
+  isRegularFile =
+    path:
+    let
+      dir = builtins.dirOf path;
+      base = builtins.baseNameOf path;
+    in
+    pathExists dir && (builtins.readDir dir ? base) && builtins.readDir dir.${base}.type == "regular";
+
+  # Only import if the path is a file
+  importIfFile = path: if isRegularFile path then [ (import path) ] else [ ];
 
   # Read directory entries if compootuersPath is non-empty & exists
   compootuersEntries =
@@ -43,7 +55,7 @@ let
         let
           systemPath = "${compootuersPath}/${systemName}";
           systemEntries = builtins.readDir systemPath;
-          # Again, only directories for host directories
+          # For each system directory, only keep subdirs as host directories
           hostNames = builtins.filter (hn: systemEntries.${hn}.type == "directory") (
             builtins.attrNames systemEntries
           );
@@ -57,9 +69,6 @@ let
     )
   );
 
-  # Helper: only import a file if it actually exists
-  importIfExists = path: if pathExists path then [ (import path) ] else [ ];
-
   # Generate a NixOS configuration for a sub { hostName, system, src }
   configForSub =
     {
@@ -69,7 +78,6 @@ let
     let
       inherit (sub) system src hostName;
 
-      # Base modules (always included)
       baseModules =
         [
           {
@@ -79,12 +87,11 @@ let
           localFlake.nixosModules.sane
           localFlake.nixosModules.nix-conf
         ]
-        # Optional host-level both.nix
-        ++ importIfExists "${src}/both.nix"
-        # Optional allSystems/both.nix
-        ++ (if hasAllSystems then importIfExists "${allSystemsPath}/both.nix" else [ ]);
+        # Host-level both.nix
+        ++ importIfFile "${src}/both.nix"
+        # allSystems/both.nix
+        ++ (if hasAllSystems then importIfFile "${allSystemsPath}/both.nix" else [ ]);
 
-      # Modules to add if `iso = true`
       isoModules =
         [
           {
@@ -105,17 +112,17 @@ let
             };
           }
         ]
-        # Optional host-level iso.nix
-        ++ importIfExists "${src}/iso.nix"
-        # Optional allSystems/iso.nix
-        ++ (if hasAllSystems then importIfExists "${allSystemsPath}/iso.nix" else [ ]);
+        # Host-level iso.nix
+        ++ importIfFile "${src}/iso.nix"
+        # allSystems/iso.nix
+        ++ (if hasAllSystems then importIfFile "${allSystemsPath}/iso.nix" else [ ]);
 
-      # Modules to add if `iso = false`
       nonIsoModules =
-        # Optional host-level default.nix
-        importIfExists "${src}/default.nix"
-        # Optional allSystems/default.nix
-        ++ (if hasAllSystems then importIfExists "${allSystemsPath}/default.nix" else [ ]);
+        # Host-level default.nix
+        importIfFile "${src}/default.nix"
+        # allSystems/default.nix
+        ++ (if hasAllSystems then importIfFile "${allSystemsPath}/default.nix" else [ ]);
+
     in
     withSystem system (
       {
