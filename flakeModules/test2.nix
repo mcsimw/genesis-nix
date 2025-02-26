@@ -8,43 +8,67 @@
   ...
 }:
 let
+  ####################################################################
+  # 1) Path to nixpkgs modules (used for ISO imports)
+  ####################################################################
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
-  perSystemPath =
-    if config.compootuers.perSystem == null then null else builtins.toPath config.compootuers.perSystem;
-  allSystemsPath =
-    if config.compootuers.allSystems == null then
-      null
-    else
-      builtins.toPath config.compootuers.allSystems;
-  hasPerSystem = perSystemPath != null && builtins.pathExists perSystemPath;
+
+  ####################################################################
+  # 2) compootuers.perSystem and compootuers.allSystems
+  ####################################################################
+  perSystemPath = if config.compootuers.perSystem == null
+    then null
+    else builtins.toPath config.compootuers.perSystem;
+
+  allSystemsPath = if config.compootuers.allSystems == null
+    then null
+    else builtins.toPath config.compootuers.allSystems;
+
+  hasPerSystem  = perSystemPath  != null && builtins.pathExists perSystemPath;
   hasAllSystems = allSystemsPath != null && builtins.pathExists allSystemsPath;
+
+  ####################################################################
+  # 3) Build the list of (system, host) only if hasPerSystem is true
+  ####################################################################
   computedCompootuers = builtins.concatLists (
     lib.optionals hasPerSystem [
-      builtins.concatLists
-      (map (
-        system:
-        let
-          systemPath = "${perSystemPath}/${system}";
-          hostNames = builtins.attrNames (builtins.readDir systemPath);
-        in
-        map (hostName: {
-          inherit hostName system;
-          src = builtins.toPath "${systemPath}/${hostName}";
-        }) hostNames
-      ) (builtins.attrNames (builtins.readDir perSystemPath)))
+      builtins.concatLists (
+        map (system: 
+          let
+            systemPath = "${perSystemPath}/${system}";
+            hostNames  = builtins.attrNames (builtins.readDir systemPath);
+          in
+          # each element is itself a list of hosts
+          map (hostName: {
+            inherit hostName system;
+            src = builtins.toPath "${systemPath}/${hostName}";
+          }) hostNames
+        )
+        (builtins.attrNames (builtins.readDir perSystemPath))
+      )
     ]
   );
+
+  # At least one (system, host) => hasHosts
   hasHosts = (builtins.length computedCompootuers) > 0;
+
+  ####################################################################
+  # 4) Maybe-file helper
+  ####################################################################
   maybeFile = path: if builtins.pathExists path then path else null;
-  globalBothFile = if hasHosts && hasAllSystems then maybeFile "${allSystemsPath}/both.nix" else null;
-  globalDefaultFile =
-    if hasHosts && hasAllSystems then maybeFile "${allSystemsPath}/default.nix" else null;
-  globalIsoFile = if hasHosts && hasAllSystems then maybeFile "${allSystemsPath}/iso.nix" else null;
+
+  ####################################################################
+  # 5) Global modules from allSystemsPath, only if hosts exist
+  ####################################################################
+  globalBothFile    = if hasHosts && hasAllSystems then maybeFile "${allSystemsPath}/both.nix"    else null;
+  globalDefaultFile = if hasHosts && hasAllSystems then maybeFile "${allSystemsPath}/default.nix" else null;
+  globalIsoFile     = if hasHosts && hasAllSystems then maybeFile "${allSystemsPath}/iso.nix"     else null;
+
+  ####################################################################
+  # 6) Build a NixOS configuration for each (hostName, system)
+  ####################################################################
   configForSub =
-    {
-      sub,
-      iso ? false,
-    }:
+    { sub, iso ? false }:
     let
       inherit (sub) system src hostName;
     in
@@ -57,111 +81,14 @@ let
         ...
       }:
       let
-        srcBothFile = if src != null then maybeFile "${src}/both.nix" else null;
+        # Local modules for this particular host
+        srcBothFile    = if src != null then maybeFile "${src}/both.nix"    else null;
         srcDefaultFile = if src != null then maybeFile "${src}/default.nix" else null;
-        srcIsoFile = if src != null then maybeFile "${src}/iso.nix" else null;
+        srcIsoFile     = if src != null then maybeFile "${src}/iso.nix"     else null;
+
+        # Base modules always used
         baseModules =
           [
             {
-              networking.hostName = hostName;
-              nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
-            }
-            localFlake.nixosModules.sane
-            localFlake.nixosModules.nix-conf
-          ]
-          ++ lib.optional (globalBothFile != null) globalBothFile
-          ++ lib.optional (srcBothFile != null) srcBothFile;
-        isoModules =
-          [
-            {
-              imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
-              boot.initrd.systemd.enable = lib.mkForce false;
-              isoImage.squashfsCompression = "lz4";
-              networking.wireless.enable = lib.mkForce false;
-              systemd.targets = {
-                sleep.enable = lib.mkForce false;
-                suspend.enable = lib.mkForce false;
-                hibernate.enable = lib.mkForce false;
-                hybrid-sleep.enable = lib.mkForce false;
-              };
-              users.users.nixos = {
-                initialPassword = "iso";
-                hashedPasswordFile = null;
-                hashedPassword = null;
-              };
-            }
-          ]
-          ++ lib.optional (globalIsoFile != null) globalIsoFile
-          ++ lib.optional (srcIsoFile != null) srcIsoFile;
-        nonIsoModules =
-          lib.optional (globalDefaultFile != null) globalDefaultFile
-          ++ lib.optional (srcDefaultFile != null) srcDefaultFile;
+              network
 
-        finalModules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
-      in
-      inputs.nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit (config) packages;
-          inherit
-            inputs
-            inputs'
-            self'
-            self
-            system
-            ;
-        };
-        modules = finalModules;
-      }
-    );
-in
-{
-  options.compootuers = {
-    perSystem = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
-      description = ''
-        Path with subdirectories for each system, each containing subdirectories
-        for each host. For example: /my/hosts/x86_64-linux/myhost/default.nix
-      '';
-    };
-    allSystems = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
-      description = ''
-        Path that may contain both.nix, default.nix, or iso.nix to be applied
-        to all discovered systems/hosts, if any exist in perSystem.
-      '';
-    };
-  };
-  config = {
-    flake.nixosConfigurations = builtins.listToAttrs (
-      builtins.concatLists (
-        map (
-          sub:
-          let
-            inherit (sub) hostName;
-          in
-          lib.optionals (hostName != null) [
-            {
-              name = hostName;
-              value = configForSub {
-                inherit sub;
-                iso = false;
-              };
-            }
-            {
-              name = "${hostName}-iso";
-              value = configForSub {
-                inherit sub;
-                iso = true;
-              };
-            }
-          ]
-        ) computedCompootuers
-      )
-    );
-    systems = lib.unique (
-      builtins.filter (s: s != null) (map ({ system, ... }: system) computedCompootuers)
-    );
-  };
-}
