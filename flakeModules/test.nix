@@ -11,7 +11,7 @@
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
 
-  # Path to compootuers directory if set
+  # If compootuers.path is set, capture it as a string
   compootuersPath = lib.optionalString (config.compootuers.path != null) (
     builtins.toString config.compootuers.path
   );
@@ -19,24 +19,23 @@ let
   # Helper: check if a path exists
   pathExists = builtins.pathExists or (_p: false);
 
-  # If compootuersPath is non-empty, read directory entries
+  # Read directory entries if compootuersPath is non-empty & exists
   compootuersEntries =
     if compootuersPath != "" && pathExists compootuersPath then
       builtins.readDir compootuersPath
     else
       { };
 
-  # For each entry in compootuersPath, keep only directories (type == "directory")
-  # and exclude "allSystems" special folder from normal systems.
+  # Filter out non-directories, and exclude "allSystems"
   systemNames = builtins.filter (
     name: compootuersEntries.${name}.type == "directory" && name != "allSystems"
   ) (builtins.attrNames compootuersEntries);
 
-  # The "allSystems" directory
+  # Special "allSystems" directory
   allSystemsPath = "${compootuersPath}/allSystems";
   hasAllSystems = pathExists allSystemsPath;
 
-  # Build our list of (system, hostName) pairs.
+  # Build (system, hostName) pairs from subdirectories
   computedCompootuers = lib.optionals (compootuersPath != "") (
     builtins.concatLists (
       map (
@@ -44,7 +43,7 @@ let
         let
           systemPath = "${compootuersPath}/${systemName}";
           systemEntries = builtins.readDir systemPath;
-          # For the system directory, again keep only directories
+          # Again, only directories for host directories
           hostNames = builtins.filter (hn: systemEntries.${hn}.type == "directory") (
             builtins.attrNames systemEntries
           );
@@ -58,9 +57,10 @@ let
     )
   );
 
-  # Helper function that imports a file in a directory, but only if the file exists
+  # Helper: only import a file if it actually exists
   importIfExists = path: if pathExists path then [ (import path) ] else [ ];
 
+  # Generate a NixOS configuration for a sub { hostName, system, src }
   configForSub =
     {
       sub,
@@ -69,8 +69,7 @@ let
     let
       inherit (sub) system src hostName;
 
-      # Each system gets "both.nix" from the system/host directory, plus
-      # "both.nix" from allSystems (if it exists).
+      # Base modules (always included)
       baseModules =
         [
           {
@@ -80,11 +79,12 @@ let
           localFlake.nixosModules.sane
           localFlake.nixosModules.nix-conf
         ]
-        # host-specific "both.nix"?
+        # Optional host-level both.nix
         ++ importIfExists "${src}/both.nix"
-        # allSystems "both.nix" if present?
+        # Optional allSystems/both.nix
         ++ (if hasAllSystems then importIfExists "${allSystemsPath}/both.nix" else [ ]);
 
+      # Modules to add if `iso = true`
       isoModules =
         [
           {
@@ -100,21 +100,21 @@ let
             };
             users.users.nixos = {
               initialPassword = "iso";
-              # The next two lines let you override that default cleanly
               hashedPasswordFile = null;
               hashedPassword = null;
             };
           }
         ]
-        # host-specific "iso.nix"?
+        # Optional host-level iso.nix
         ++ importIfExists "${src}/iso.nix"
-        # allSystems "iso.nix"?
+        # Optional allSystems/iso.nix
         ++ (if hasAllSystems then importIfExists "${allSystemsPath}/iso.nix" else [ ]);
 
+      # Modules to add if `iso = false`
       nonIsoModules =
-        # host-specific "default.nix" if it exists
+        # Optional host-level default.nix
         importIfExists "${src}/default.nix"
-        # plus allSystems "default.nix"
+        # Optional allSystems/default.nix
         ++ (if hasAllSystems then importIfExists "${allSystemsPath}/default.nix" else [ ]);
     in
     withSystem system (
@@ -158,7 +158,7 @@ in
         map (
           sub:
           let
-            inherit sub hostName;
+            inherit (sub) hostName;
           in
           lib.optionals (hostName != null) [
             {
