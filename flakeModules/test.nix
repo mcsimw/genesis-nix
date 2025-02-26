@@ -8,17 +8,24 @@
   ...
 }:
 let
+  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
+
   allCompootuersPath =
     if config.allCompootuers.path == null then null else builtins.toPath config.allCompootuers.path;
+
   hasAllCompootuers = allCompootuersPath != null && builtins.pathExists allCompootuersPath;
+
   maybeFile = path: if builtins.pathExists path then path else null;
+
   globalBothFile = if hasAllCompootuers then maybeFile "${allCompootuersPath}/both.nix" else null;
   globalDefaultFile =
     if hasAllCompootuers then maybeFile "${allCompootuersPath}/default.nix" else null;
   globalIsoFile = if hasAllCompootuers then maybeFile "${allCompootuersPath}/iso.nix" else null;
+
   compootuersPath = lib.optionalString (config.compootuers.path != null) (
     builtins.toString config.compootuers.path
   );
+
   computedCompootuers = lib.optionals (compootuersPath != "") (
     builtins.concatLists (
       map (
@@ -34,6 +41,7 @@ let
       ) (builtins.attrNames (builtins.readDir compootuersPath))
     )
   );
+
   configForSub =
     {
       sub,
@@ -84,7 +92,6 @@ let
               };
               users.users.nixos = {
                 initialPassword = "iso";
-                # The cd-base sets these to "" so override them to avoid warnings:
                 hashedPasswordFile = null;
                 hashedPassword = null;
               };
@@ -96,6 +103,7 @@ let
         nonIsoModules =
           lib.optional (globalDefaultFile != null) globalDefaultFile
           ++ lib.optional (srcDefaultFile != null) srcDefaultFile;
+
         myModules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
 
       in
@@ -124,12 +132,13 @@ in
       `iso.nix` that should be applied to all hosts and systems.
     '';
   };
+
   options.compootuers.path = lib.mkOption {
     type = lib.types.nullOr lib.types.path;
     default = null;
     description = ''
-      Path to the directory containing per-system subdirectories
-      (each of which contains per-host directories). 
+      Path to the directory containing per-system subdirectories,
+      each containing per-host directories.
     '';
   };
   config = {
