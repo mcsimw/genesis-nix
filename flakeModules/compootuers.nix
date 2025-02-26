@@ -72,7 +72,6 @@ let
           ]
           ++ lib.optional (globalBothFile != null) globalBothFile
           ++ lib.optional (srcBothFile != null) srcBothFile;
-
         isoModules =
           [
             {
