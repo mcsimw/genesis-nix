@@ -9,7 +9,6 @@
 }:
 let
   modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
-
   perSystemPath =
     if config.compootuers.perSystem == null then null else builtins.toPath config.compootuers.perSystem;
 
@@ -18,14 +17,11 @@ let
       null
     else
       builtins.toPath config.compootuers.allSystems;
-
   hasPerSystem = perSystemPath != null && builtins.pathExists perSystemPath;
   hasAllSystems = allSystemsPath != null && builtins.pathExists allSystemsPath;
-
   computedCompootuers =
     if hasPerSystem then
       builtins.concatLists (
-        # For each subdirectory = a system name
         map (
           system:
           let
@@ -41,18 +37,12 @@ let
       )
     else
       [ ];
-
   hasHosts = (builtins.length computedCompootuers) > 0;
-
   maybeFile = path: if builtins.pathExists path then path else null;
-
   globalBothFile = if hasHosts && hasAllSystems then maybeFile "${allSystemsPath}/both.nix" else null;
-
   globalDefaultFile =
     if hasHosts && hasAllSystems then maybeFile "${allSystemsPath}/default.nix" else null;
-
   globalIsoFile = if hasHosts && hasAllSystems then maybeFile "${allSystemsPath}/iso.nix" else null;
-
   configForSub =
     {
       sub,
@@ -73,7 +63,6 @@ let
         srcBothFile = if src != null then maybeFile "${src}/both.nix" else null;
         srcDefaultFile = if src != null then maybeFile "${src}/default.nix" else null;
         srcIsoFile = if src != null then maybeFile "${src}/iso.nix" else null;
-
         baseModules =
           [
             {
@@ -112,7 +101,6 @@ let
         nonIsoModules =
           lib.optional (globalDefaultFile != null) globalDefaultFile
           ++ lib.optional (srcDefaultFile != null) srcDefaultFile;
-
         finalModules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       in
       inputs.nixpkgs.lib.nixosSystem {
@@ -129,7 +117,6 @@ let
         modules = finalModules;
       }
     );
-
 in
 {
   options.compootuers = {
@@ -180,7 +167,6 @@ in
         ) computedCompootuers
       )
     );
-
     systems = lib.unique (
       builtins.filter (s: s != null) (map ({ system, ... }: system) computedCompootuers)
     );
