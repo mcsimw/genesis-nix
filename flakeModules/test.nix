@@ -8,27 +8,17 @@
   ...
 }:
 let
-  modulesPath = "${inputs.nixpkgs.outPath}/nixos/modules";
   allCompootuersPath =
     if config.allCompootuers.path == null then null else builtins.toPath config.allCompootuers.path;
-
   hasAllCompootuers = allCompootuersPath != null && builtins.pathExists allCompootuersPath;
-
-  globalBoth = lib.optional (
-    hasAllCompootuers && builtins.pathExists "${allCompootuersPath}/both.nix"
-  ) (import "${allCompootuersPath}/both.nix");
-
-  globalDefault = lib.optional (
-    hasAllCompootuers && builtins.pathExists "${allCompootuersPath}/default.nix"
-  ) (import "${allCompootuersPath}/default.nix");
-
-  globalIso = lib.optional (
-    hasAllCompootuers && builtins.pathExists "${allCompootuersPath}/iso.nix"
-  ) (import "${allCompootuersPath}/iso.nix");
+  maybeFile = path: if builtins.pathExists path then path else null;
+  globalBothFile = if hasAllCompootuers then maybeFile "${allCompootuersPath}/both.nix" else null;
+  globalDefaultFile =
+    if hasAllCompootuers then maybeFile "${allCompootuersPath}/default.nix" else null;
+  globalIsoFile = if hasAllCompootuers then maybeFile "${allCompootuersPath}/iso.nix" else null;
   compootuersPath = lib.optionalString (config.compootuers.path != null) (
     builtins.toString config.compootuers.path
   );
-
   computedCompootuers = lib.optionals (compootuersPath != "") (
     builtins.concatLists (
       map (
@@ -61,17 +51,23 @@ let
         ...
       }:
       let
+        srcBothFile = if src != null then maybeFile "${src}/both.nix" else null;
+        srcDefaultFile = if src != null then maybeFile "${src}/default.nix" else null;
+        srcIsoFile = if src != null then maybeFile "${src}/iso.nix" else null;
+
         baseModules =
           [
             {
               networking.hostName = hostName;
               nixpkgs.pkgs = withSystem system ({ pkgs, ... }: pkgs);
             }
+
             localFlake.nixosModules.sane
             localFlake.nixosModules.nix-conf
+
           ]
-          ++ globalBoth
-          ++ lib.optional (src != null && builtins.pathExists "${src}/both.nix") (import "${src}/both.nix");
+          ++ lib.optional (globalBothFile != null) globalBothFile
+          ++ lib.optional (srcBothFile != null) srcBothFile;
 
         isoModules =
           [
@@ -88,20 +84,19 @@ let
               };
               users.users.nixos = {
                 initialPassword = "iso";
-                # Overriding these to avoid warnings
+                # The cd-base sets these to "" so override them to avoid warnings:
                 hashedPasswordFile = null;
                 hashedPassword = null;
               };
             }
           ]
-          ++ globalIso
-          ++ lib.optional (src != null && builtins.pathExists "${src}/iso.nix") (import "${src}/iso.nix");
+          ++ lib.optional (globalIsoFile != null) globalIsoFile
+          ++ lib.optional (srcIsoFile != null) srcIsoFile;
 
         nonIsoModules =
-          globalDefault
-          ++ lib.optional (src != null && builtins.pathExists "${src}/default.nix") (
-            import "${src}/default.nix"
-          );
+          lib.optional (globalDefaultFile != null) globalDefaultFile
+          ++ lib.optional (srcDefaultFile != null) srcDefaultFile;
+        myModules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
 
       in
       inputs.nixpkgs.lib.nixosSystem {
@@ -115,9 +110,10 @@ let
             system
             ;
         };
-        modules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
+        modules = myModules;
       }
     );
+
 in
 {
   options.allCompootuers.path = lib.mkOption {
@@ -128,16 +124,14 @@ in
       `iso.nix` that should be applied to all hosts and systems.
     '';
   };
-
   options.compootuers.path = lib.mkOption {
     type = lib.types.nullOr lib.types.path;
     default = null;
     description = ''
       Path to the directory containing per-system subdirectories
-      (each of which contains per-host directories).
+      (each of which contains per-host directories). 
     '';
   };
-
   config = {
     flake.nixosConfigurations = builtins.listToAttrs (
       builtins.concatLists (
