@@ -94,7 +94,6 @@ let
           ]
           ++ lib.optional (globalIsoFile != null) globalIsoFile
           ++ lib.optional (srcIsoFile != null) srcIsoFile;
-
         nonIsoModules =
           lib.optional (globalDefaultFile != null) globalDefaultFile
           ++ lib.optional (srcDefaultFile != null) srcDefaultFile;
