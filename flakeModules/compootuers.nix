@@ -126,7 +126,6 @@ in
         E.g. `$perSystem/x86_64-linux/myhost/default.nix`.
       '';
     };
-
     allSystems = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
