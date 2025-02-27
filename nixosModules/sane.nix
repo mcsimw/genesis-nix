@@ -25,10 +25,10 @@
     defaultPackages = [ ];
     systemPackages = [
       # If I use efi systems, install efibootmgr
-      (lib.optional (
+	  (lib.mkIf (
         config.boot.loader.systemd-boot.enable
         || (config.boot ? lanzaboote && config.boot.lanzaboote.enable)
-      ) pkgs.efibootmgr)
+      ) efibootmgr)
     ];
   };
   programs = {
