@@ -28,7 +28,7 @@
 	  (lib.mkIf (
         config.boot.loader.systemd-boot.enable
         || (config.boot ? lanzaboote && config.boot.lanzaboote.enable)
-      ) efibootmgr)
+      ) pkgs.efibootmgr)
     ];
   };
   programs = {
