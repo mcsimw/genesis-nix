@@ -74,36 +74,42 @@ let
           ++ lib.optional (srcBothFile != null) srcBothFile;
         isoModules =
           [
-            {
-              imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
-              boot.initrd.systemd.enable = lib.mkForce false;
-              isoImage.squashfsCompression = "lz4";
-              networking.wireless.enable = lib.mkForce false;
-              systemd.targets = {
-                sleep.enable = lib.mkForce false;
-                suspend.enable = lib.mkForce false;
-                hibernate.enable = lib.mkForce false;
-                hybrid-sleep.enable = lib.mkForce false;
-              };
-              users.users.nixos = {
-                initialPassword = "iso";
-                hashedPasswordFile = null;
-                hashedPassword = null;
-              };
-              networking.hostId = lib.mkForce (
-                builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
-              );
-            }
+            (
+              { config, lib, ... }:
+              {
+                imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+                boot.initrd.systemd.enable = lib.mkForce false;
+                isoImage.squashfsCompression = "lz4";
+                networking.wireless.enable = lib.mkForce false;
+                systemd.targets = {
+                  sleep.enable = lib.mkForce false;
+                  suspend.enable = lib.mkForce false;
+                  hibernate.enable = lib.mkForce false;
+                  hybrid-sleep.enable = lib.mkForce false;
+                };
+                users.users.nixos = {
+                  initialPassword = "iso";
+                  hashedPasswordFile = null;
+                  hashedPassword = null;
+                };
+                networking.hostId = lib.mkForce (
+                  builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
+                );
+              }
+            )
           ]
           ++ lib.optional (globalIsoFile != null) globalIsoFile
           ++ lib.optional (srcIsoFile != null) srcIsoFile;
         nonIsoModules =
           [
-            {
-              networking.hostId = lib.mkDefault (
-                builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
-              );
-            }
+            (
+              { lib, config, ... }:
+              {
+                networking.hostId = lib.mkDefault (
+                  builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
+                );
+              }
+            )
           ]
           ++ lib.optional (globalDefaultFile != null) globalDefaultFile
           ++ lib.optional (srcDefaultFile != null) srcDefaultFile;
