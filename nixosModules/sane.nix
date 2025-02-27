@@ -5,12 +5,7 @@
   ...
 }:
 {
-  networking = {
-    useDHCP = lib.mkDefault true;
-    hostId = lib.mkDefault (
-      builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
-    );
-  };
+  networking.useDHCP = lib.mkDefault true;
   xdg.portal.xdgOpenUsePortal = lib.mkDefault true;
   users.mutableUsers = lib.mkDefault false;
   security.polkit.enable = lib.mkDefault true;
@@ -25,7 +20,7 @@
     defaultPackages = [ ];
     systemPackages = [
       # If I use efi systems, install efibootmgr
-	  (lib.mkIf (
+      (lib.mkIf (
         config.boot.loader.systemd-boot.enable
         || (config.boot ? lanzaboote && config.boot.lanzaboote.enable)
       ) pkgs.efibootmgr)

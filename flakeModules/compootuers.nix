@@ -90,12 +90,22 @@ let
                 hashedPasswordFile = null;
                 hashedPassword = null;
               };
+              networking.hostId = lib.mkForce (
+                builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
+              );
             }
           ]
           ++ lib.optional (globalIsoFile != null) globalIsoFile
           ++ lib.optional (srcIsoFile != null) srcIsoFile;
         nonIsoModules =
-          lib.optional (globalDefaultFile != null) globalDefaultFile
+          [
+            {
+              networking.hostId = lib.mkDefault (
+                builtins.substring 0 8 (builtins.hashString "md5" config.networking.hostName)
+              );
+            }
+          ]
+          ++ lib.optional (globalDefaultFile != null) globalDefaultFile
           ++ lib.optional (srcDefaultFile != null) srcDefaultFile;
         finalModules = baseModules ++ lib.optionals iso isoModules ++ lib.optionals (!iso) nonIsoModules;
       in
