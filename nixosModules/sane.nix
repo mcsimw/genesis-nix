@@ -17,8 +17,8 @@
   services = {
     userborn.enable = lib.mkDefault true;
     pulseaudio.enable = lib.mkForce false;
-    udisks2.enable = lib.mkForce true;
-    dbus.implementation = lib.mkForce "broker";
+    udisks2.enable = lib.mkDefault true;
+    dbus.implementation = lib.mkDefault "broker";
   };
   environment = {
     variables.NIXPKGS_CONFIG = lib.mkForce "";
@@ -31,7 +31,7 @@
     ];
   };
   programs = {
-    direnv.enable = lib.mkForce true;
+    direnv.enable = lib.mkDefault true;
     command-not-found.enable = lib.mkForce false;
     vim = {
       enable = lib.mkDefault true;
