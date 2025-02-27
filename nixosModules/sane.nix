@@ -23,12 +23,14 @@
   environment = {
     variables.NIXPKGS_CONFIG = lib.mkForce "";
     defaultPackages = [ ];
-    systemPackages = with pkgs; [
+    systemPackages = [
       # If I use efi systems, install efibootmgr
-      (lib.mkIf (
+      lib.optional
+      (
         config.boot.loader.systemd-boot.enable
         || (config.boot ? lanzaboote && config.boot.lanzaboote.enable)
-      ) efibootmgr)
+      )
+      pkgs.efibootmgr
     ];
   };
   programs = {
