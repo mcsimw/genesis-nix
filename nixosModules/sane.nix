@@ -13,7 +13,7 @@
   };
   xdg.portal.xdgOpenUsePortal = lib.mkDefault true;
   users.mutableUsers = lib.mkDefault false;
-  security.polkit.enable = lib.mkForce true;
+  security.polkit.enable = lib.mkDefault true;
   services = {
     userborn.enable = lib.mkDefault true;
     pulseaudio.enable = lib.mkForce false;
