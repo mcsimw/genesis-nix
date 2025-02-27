@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   networking = {
     useDHCP = lib.mkDefault true;
@@ -53,7 +58,7 @@
     info.enable = lib.mkForce false;
   };
   environment.systemPackages = with pkgs; [
-	# If I use efi systems, install efibootmgr
+    # If I use efi systems, install efibootmgr
     (lib.mkIf (
       config.boot.loader.systemd.enable || (config.boot ? lanzaboote && config.boot.lanzaboote)
     ) efibootmgr)
