@@ -26,7 +26,8 @@
     systemPackages = with pkgs; [
       # If I use efi systems, install efibootmgr
       (lib.mkIf (
-        config.boot.loader.systemd-boot.enable || (config.boot ? lanzaboote && config.boot.lanzaboote.enable)
+        config.boot.loader.systemd-boot.enable
+        || (config.boot ? lanzaboote && config.boot.lanzaboote.enable)
       ) efibootmgr)
     ];
   };
