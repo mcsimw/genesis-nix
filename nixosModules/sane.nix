@@ -7,7 +7,7 @@
 {
   networking.useDHCP = lib.mkDefault true;
   xdg.portal.xdgOpenUsePortal = lib.mkDefault true;
-  users.mutableUsers = lib.mkDefault false;
+  users.mutableUsers = lib.mkForce false;
   security = {
     polkit.enable = lib.mkDefault true;
     sudo.execWheelOnly = lib.mkForce true;
@@ -16,7 +16,7 @@
     userborn.enable = lib.mkDefault true;
     pulseaudio.enable = lib.mkForce false;
     udisks2.enable = lib.mkDefault true;
-    dbus.implementation = lib.mkDefault "broker";
+    dbus.implementation = lib.mkForce "broker";
   };
   environment = {
     variables.NIXPKGS_CONFIG = lib.mkForce "";
@@ -32,10 +32,6 @@
   programs = {
     direnv.enable = lib.mkDefault true;
     command-not-found.enable = lib.mkForce false;
-    vim = {
-      enable = lib.mkDefault true;
-      defaultEditor = true;
-    };
     fuse.userAllowOther = true;
     git = {
       enable = lib.mkForce true;
