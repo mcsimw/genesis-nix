@@ -10,7 +10,7 @@
   users.mutableUsers = lib.mkDefault false;
   security = {
     polkit.enable = lib.mkDefault true;
-    execWheelOnly = lib.mkForce true;
+    sudo.execWheelOnly = lib.mkForce true;
   };
   services = {
     userborn.enable = lib.mkDefault true;
