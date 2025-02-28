@@ -8,7 +8,10 @@
   networking.useDHCP = lib.mkDefault true;
   xdg.portal.xdgOpenUsePortal = lib.mkDefault true;
   users.mutableUsers = lib.mkDefault false;
-  security.polkit.enable = lib.mkDefault true;
+  security = {
+    polkit.enable = lib.mkDefault true;
+    execWheelOnly = lib.mkForce true;
+  };
   services = {
     userborn.enable = lib.mkDefault true;
     pulseaudio.enable = lib.mkForce false;
