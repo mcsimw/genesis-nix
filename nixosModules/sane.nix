@@ -21,13 +21,6 @@
   environment = {
     variables.NIXPKGS_CONFIG = lib.mkForce "";
     defaultPackages = [ ];
-    systemPackages = [
-      # If I use efi systems, install efibootmgr
-      (lib.mkIf (
-        config.boot.loader.systemd-boot.enable
-        || (config.boot ? lanzaboote && config.boot.lanzaboote.enable)
-      ) pkgs.efibootmgr)
-    ];
   };
   programs = {
     direnv.enable = lib.mkDefault true;
