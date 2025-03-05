@@ -30,6 +30,7 @@
       enable = lib.mkForce true;
       lfs.enable = lib.mkDefault true;
     };
+    nano.enable = false
   };
   documentation = {
     enable = lib.mkForce true;
