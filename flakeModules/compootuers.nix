@@ -118,6 +118,7 @@ let
       inputs.nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit (config) packages;
+          inherit (config.environment) systemPackages;
           inherit
             inputs
             inputs'
