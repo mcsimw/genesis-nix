@@ -14,6 +14,7 @@
     pulseaudio.enable = lib.mkForce false;
     udisks2.enable = lib.mkDefault true;
     dbus.implementation = lib.mkForce "broker";
+    userborn.enable = lib.mkForce true;
   };
   environment = {
     variables.NIXPKGS_CONFIG = lib.mkForce "";
