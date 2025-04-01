@@ -56,6 +56,7 @@
           "fetch-closure"
           "dynamic-derivations"
           "pipe-operators"
+          "recursive-nix"
         ];
       };
     };
