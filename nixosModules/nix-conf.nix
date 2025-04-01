@@ -28,6 +28,7 @@
       nixPath = [ "nixpkgs=flake:nixpkgs" ];
       channel.enable = false;
       settings = {
+        auto-allocate-uids = true;
         trusted-users = [ "@wheel" ];
         allowed-users = lib.mapAttrsToList (_: u: u.name) (
           lib.filterAttrs (_: user: user.isNormalUser) config.users.users
