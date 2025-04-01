@@ -11,7 +11,6 @@
     sudo.execWheelOnly = lib.mkForce true;
   };
   services = {
-    userborn.enable = lib.mkDefault true;
     pulseaudio.enable = lib.mkForce false;
     udisks2.enable = lib.mkDefault true;
     dbus.implementation = lib.mkForce "broker";
