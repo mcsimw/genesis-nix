@@ -48,6 +48,7 @@
         sandbox = true;
         http-connections = 0;
         max-substitution-jobs = 128;
+        system-features = [ "uid-range" ];
         extra-experimental-features = [
           "nix-command"
           "flakes"
