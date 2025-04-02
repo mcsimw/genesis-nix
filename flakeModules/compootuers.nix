@@ -80,6 +80,7 @@ let
                 imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
                 boot.initrd.systemd.enable = lib.mkForce false;
                 isoImage.squashfsCompression = "lz4";
+		system.installer.channel.enable = lib.mkForce false;
                 networking.wireless.enable = lib.mkForce false;
                 systemd.targets = {
                   sleep.enable = lib.mkForce false;
