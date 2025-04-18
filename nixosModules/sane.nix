@@ -3,7 +3,10 @@
   ...
 }:
 {
-  networking.useDHCP = lib.mkDefault true;
+  networking = {
+    useDHCP = lib.mkDefault true;
+    networkmanager.wifi.powersave = lib.mkDefault false;
+  };
   xdg.portal.xdgOpenUsePortal = lib.mkDefault true;
   users.mutableUsers = lib.mkForce false;
   security = {
