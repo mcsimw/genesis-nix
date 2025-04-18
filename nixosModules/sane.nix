@@ -21,7 +21,10 @@
     defaultPackages = [ ];
   };
   programs = {
-    direnv.enable = lib.mkDefault true;
+    direnv = {
+      enable = lib.mkDefault true;
+      silent = lib.mkDefault true;
+    };
     command-not-found.enable = lib.mkForce false;
     fuse.userAllowOther = true;
     git = {
